@@ -11,6 +11,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@prisma/client": "^6.16.2",
     "@types/express": "^5.0.3",
     "@types/lodash": "^4.17.20",
     "@types/node": "^24.5.0",
@@ -20,6 +21,7 @@
     "inquirer": "^12.9.4",
     "nodemon": "^3.1.10",
     "pino": "^9.9.0",
+    "prisma": "^6.16.2",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"

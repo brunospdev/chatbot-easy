@@ -45,6 +45,6 @@ services:
     container_name: banco_auth_easy_chatbot
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: chatbot_auth
+      MYSQL_DATABASE: auth_chatbot
     ports:
       - "3006:3306"

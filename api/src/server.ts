@@ -48,6 +48,6 @@ app.get('/usuarios', async (req: Request, res: Response) => {
 });
 
 app.listen(PORT, async () => {
-  console.log(`🚀 API rodando em http://localhost:${PORT}`);
+  console.log(` API rodando em http://localhost:${PORT}`);
   await connectToWhatsApp();
 });
