@@ -13,7 +13,7 @@
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^24.3.0",
+    "@types/node": "^24.5.0",
     "@types/node-fetch": "^2.6.13",
     "@types/qrcode-terminal": "^0.12.2",
     "fs": "^0.0.1-security",

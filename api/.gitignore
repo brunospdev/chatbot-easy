@@ -5,3 +5,4 @@ yarn-error.log
 
 auth_info_doncomedia/
 auth_info_baileys/
+/src/generated/prisma
