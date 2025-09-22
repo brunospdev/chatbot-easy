@@ -4,29 +4,29 @@ import pool from "../db";
 const router = Router();
 
 router.post("/", async (req: Request, res: Response) => {
-    const { nome_plataforma, dominio } = req.body;
-    if (!nome_plataforma || !dominio) {
-        return res.status(400).json({ error: "Nome da plataforma e domínio são obrigatórios." });
+    const { nome, celular, id_empresa, } = req.body;
+    if (!nome || !id_empresa) {
+        return res.status(400).json({ error: "Nome e id_empresa são obrigatórios." });
     }
 
     try {
         const [result] = await pool.query<any>(
-            "INSERT INTO Plataforma (nome_plataforma, dominio) VALUES (?, ?)",
-            [nome_plataforma, dominio]
+            "INSERT INTO AdmEmpresa (nome, celular, id_empresa) VALUES (?, ?, ?)",
+            [nome, celular, id_empresa]
         );
         res.status(201).json({
-            id_plataforma: result.insertId,
-            nome_plataforma,
-            dominio,
+            id_usuario: result.insertId,
+            nome,
+            celular,
+            id_empresa,
         });
     } catch (err: any) {
         res.status(500).json({ error: err.message });
     }
 });
-
 router.get("/", async (_req: Request, res: Response) => {
     try {
-        const [rows] = await pool.query("SELECT * FROM Plataforma");
+        const [rows] = await pool.query("SELECT * FROM AdmEmpresa");
         res.json(rows);
     } catch (err: any) {
         res.status(500).json({ error: err.message });

@@ -3,22 +3,21 @@ import pool from "../db";
 const router = Router();
 
 router.post("/", async (req: Request, res: Response) => {
-    const { nome_empresa, cnpj, telefone, id_plataforma } = req.body;
-    if (!nome_empresa || !cnpj || !telefone || !id_plataforma) {
+    const { nome_empresa, cnpj, telefone } = req.body;
+    if (!nome_empresa || !cnpj || !telefone ) {
         return res.status(400).json({ error: "Todos os campos são obrigatórios." });
     }
 
     try {
         const [result] = await pool.query<any>(
-            "INSERT INTO Empresa (nome_empresa, cnpj, telefone, id_plataforma) VALUES (?, ?, ?, ?)",
-            [nome_empresa, cnpj, telefone, id_plataforma]
+            "INSERT INTO Empresa (nome_empresa, cnpj, telefone) VALUES (?, ?, ?)",
+            [nome_empresa, cnpj, telefone]
         );
         res.status(201).json({
             id_empresa: result.insertId,
             nome_empresa,
             cnpj,
-            telefone,
-            id_plataforma,
+            telefone
         });
     } catch (err: any) {
         res.status(500).json({ error: err.message });

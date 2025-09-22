@@ -1,8 +1,8 @@
 import express, {Application, Request, Response} from 'express';
 import { connectToWhatsApp } from './utils/baileys';
 import empresasRouter from "./routes/empresas";
+import AdmEmpresasRouter from "./routes/AdmEmpresas";
 import usuariosRouter from "./routes/users";
-import plataformasRouter from "./routes/plataformas";
 import administradoresRouter from "./routes/Admins";
 import solicitacoesRouter from "./routes/solicitacoes";
 import configuracaoErpRouter from "./routes/configuracaoERP";
@@ -17,8 +17,8 @@ const PORT = process.env.PORT || 3001;
 
 app.use("/api/empresas", empresasRouter);
 app.use("/api/usuarios", usuariosRouter);
-app.use("/api/plataformas", plataformasRouter);
 app.use("/api/administradores", administradoresRouter);
+app.use("/api/AdmEmpresas", AdmEmpresasRouter);
 app.use("/api/solicitacoes", solicitacoesRouter);
 app.use("/api/configuracoes-erp", configuracaoErpRouter);
 

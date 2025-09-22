@@ -5,8 +5,8 @@ import bcrypt from "bcrypt";
 const router = Router();
 
 router.post("/", async (req: Request, res: Response) => {
-    const { id_plataforma, nome, email, senha } = req.body;
-    if (!id_plataforma || !nome || !email || !senha) {
+    const {nome, email, senha } = req.body;
+    if ( !nome || !email || !senha) {
         return res.status(400).json({ error: "Todos os campos são obrigatórios." });
     }
 
@@ -15,12 +15,11 @@ router.post("/", async (req: Request, res: Response) => {
         const senhaHash = await bcrypt.hash(senha, salt);
 
         const [result] = await pool.query<any>(
-            "INSERT INTO Administrador (id_plataforma, nome, email, senha) VALUES (?, ?, ?, ?)",
-            [id_plataforma, nome, email, senhaHash]
+            "INSERT INTO Administrador (nome, email, senha) VALUES ( ?, ?, ?)",
+            [nome, email, senhaHash]
         );
         res.status(201).json({
             id_admin: result.insertId,
-            id_plataforma,
             nome,
             email,
         });
@@ -35,7 +34,7 @@ router.post("/", async (req: Request, res: Response) => {
 
 router.get("/", async (_req: Request, res: Response) => {
     try {
-        const [rows] = await pool.query("SELECT id_admin, id_plataforma, nome, email FROM Administrador");
+        const [rows] = await pool.query("SELECT id_admin, nome, email FROM Administrador");
         res.json(rows);
     } catch (err: any) {
         res.status(500).json({ error: err.message });
