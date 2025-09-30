@@ -10,20 +10,24 @@ export async function criarAdministradorController(req: Request, res: Response) 
 
   try {
     const id_admin = await criarAdministrador(nome, email, senha);
-    res.status(201).json({ id_admin, nome, email });
+    return res.status(201).json({ id_admin, nome, email });
   } catch (err: any) {
+    console.error("Erro ao criar administrador:", err);
+
     if (err.code === 'ER_DUP_ENTRY') {
       return res.status(409).json({ error: "Este email já está em uso." });
     }
-    res.status(500).json({ error: err.message });
+
+    return res.status(500).json({ error: err.message || "Erro interno do servidor." });
   }
 }
 
 export async function listarAdministradoresController(_req: Request, res: Response) {
   try {
     const admins = await listarAdministradores();
-    res.json(admins);
+    return res.json(admins);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error("Erro ao listar administradores:", err);
+    return res.status(500).json({ error: err.message || "Erro interno do servidor." });
   }
 }

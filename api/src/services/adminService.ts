@@ -14,6 +14,6 @@ export async function criarAdministrador(nome: string, email: string, senha: str
 }
 
 export async function listarAdministradores() {
-  const [rows] = await pool.query("SELECT id_admin, nome, email FROM Administrador");
+  const [rows] = await pool.query("SELECT * FROM Administrador");
   return rows;
 }
