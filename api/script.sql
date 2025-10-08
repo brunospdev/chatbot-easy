@@ -1,3 +1,5 @@
+-- Active: 1759413451235@@0.tcp.sa.ngrok.io@15919
+
 -- CreateTable
 CREATE TABLE `Plataforma` (
     `id_plataforma` INTEGER NOT NULL AUTO_INCREMENT,

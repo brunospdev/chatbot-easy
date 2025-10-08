@@ -4,7 +4,7 @@ import com.wpp.wppbotmanager.service.MessageService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/manager/messages")
+@RequestMapping("/wpp/messages")
 public class MessageController {
 
     private final MessageService messageService;

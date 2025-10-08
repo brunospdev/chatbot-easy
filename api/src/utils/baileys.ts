@@ -60,9 +60,12 @@ export async function connectToWhatsApp() {
       textoMensagem = "[Sticker recebido]"
     }
 
+    const sender = msg.key.remoteJid
+    const senderNumber = sender?.replace(/@s\.whatsapp\.net$/, "") || "";
+
     addMensagem({
       id: msg.key.id,
-      from: msg.key.remoteJid,
+      from: senderNumber,
       nome: msg.pushName || "Desconhecido",
       texto: textoMensagem || "",
       data: new Date().toISOString(),

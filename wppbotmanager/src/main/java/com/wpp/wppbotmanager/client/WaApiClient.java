@@ -12,7 +12,7 @@ public class WaApiClient {
 
     public WaApiClient(WebClient.Builder builder) {
         this.webClient = builder
-                .baseUrl("http://localhost:3000/wpp")
+                .baseUrl("http://localhost:3001/wpp")
                 .build();
     }
 
