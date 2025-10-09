@@ -13,4 +13,13 @@ public class UserBd {
         .baseUrl("http://localhost:3001/usuario")
         .build();
   }
+
+  public String getUser() {
+    return userTb.get()
+      .uri("/luser")
+      .retrieve()
+      .bodyToMono(String.class)
+      .doOnError(e -> System.err.println("Erro ao chamar API TS: " + e.getMessage()))
+      .block();
+  }
 }
