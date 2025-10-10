@@ -10,7 +10,7 @@ public class UserBd {
 
   public UserBd(WebClient.Builder builder) {
     this.userTb = builder
-        .baseUrl("http://localhost:3001/usuario")
+        .baseUrl("http://localhost:3001/users")
         .build();
   }
 
