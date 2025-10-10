@@ -1,8 +1,11 @@
 package com.wpp.wppbotmanager.service;
 
 import com.wpp.wppbotmanager.dto.PersonagemDTO;
+import com.wpp.wppbotmanager.dto.ResultadoPersonagensDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.List;
 
 @Service
 public class RickAndMortyService {
@@ -21,5 +24,20 @@ public class RickAndMortyService {
                 .retrieve()
                 .bodyToMono(PersonagemDTO.class)
                 .block();
+    }
+
+    public List<PersonagemDTO> buscarPersonagensIniciais() {
+
+        ResultadoPersonagensDTO resultado = this.webClient.get()
+                .uri("/character")
+                .retrieve()
+                .bodyToMono(ResultadoPersonagensDTO.class)
+                .block();
+
+        if (resultado != null && resultado.getResults() != null) {
+            return resultado.getResults();
+        }
+
+        return List.of();
     }
 }
