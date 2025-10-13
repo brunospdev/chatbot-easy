@@ -3,31 +3,32 @@ package com.wpp.wppbotmanager.client;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.wpp.wppbotmanager.dto.EmpresaDto;
+import com.wpp.wppbotmanager.dto.AdministradorDto;
+import com.wpp.wppbotmanager.dto.ConfigErpDto;
 
 @Component
-public class EmpresaBd {
+public class ConfigErpBd {
 
-  private final WebClient empresaTb;
+  private WebClient configErpTb;
 
-  public EmpresaBd(WebClient.Builder builder) {
-    this.empresaTb = builder
-        .baseUrl("http://localhost:3001/empresa")
-        .build();
+  public ConfigErpBd(WebClient.Builder builder) {
+    this.configErpTb = builder
+      .baseUrl("http://localhost:3001/ConfiguracaoERP")
+      .build();
   }
 
-  public String getEmpresa() {
-    return empresaTb.get()
-      .uri("/listarEmpresa")
+  public String getConfigErp() {
+    return configErpTb.get()
+      .uri("/lconfigerp")
       .retrieve()
       .bodyToMono(String.class)
       .doOnError(e -> System.err.println("Erro ao chamar API TS: " + e.getMessage()))
       .block();
   }
 
-  public String postEmpresa(EmpresaDto request) {
-    return empresaTb.post()
-    .uri("/criarEmpresa")
+  public String postConfigErp(ConfigErpDto request) {
+    return configErpTb.post()
+    .uri("/cconfigerp")
     .header("Content-Type", "application/json")
     .bodyValue(request)
     .retrieve()
@@ -35,5 +36,4 @@ public class EmpresaBd {
     .doOnError(e -> System.err.println("Erro ao chamar API TS: " + e.getMessage()))
     .block();
   }
-
 }
