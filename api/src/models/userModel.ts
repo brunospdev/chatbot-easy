@@ -1,38 +1,74 @@
-import pool from "../db";
+import connection from '../db'
 
-export async function criarUsuario(nome: string, telefone: string | null, papel: number, id_empresa?: number, ) {
-  const [result] = await pool.query<any>(
-    "INSERT INTO Usuario (nome, telefone, papel, id_empresa) VALUES (?, ?, ?, ?)",
-    [nome, telefone, papel, id_empresa]
-  );
-  return result.insertId;
+interface Usuario {
+  nome: string
+  telefone?: string | null
+  papel: number
+  id_empresa?: number | null
 }
 
-export async function listarUsuarios() {
-  const [rows] = await pool.query("SELECT * FROM Usuario");
-  return rows;
+
+const createUsuario = async ({ nome, telefone, papel, id_empresa }: Usuario) => {
+  const [{ insertId }]: any = await connection.execute(
+    `INSERT INTO Usuario (nome, telefone, papel, id_empresa) VALUES (?, ?, ?, ?)`,
+    [nome, telefone ?? null, papel, id_empresa ?? null]
+  )
+  return insertId
 }
 
-export async function atualizarUsuario(id: number, nome: string, telefone: string, id_empresa: number) {
-  const [result]: any = await pool.query(
-    "UPDATE Usuario SET nome = ?, telefone = ?, id_empresa = ? WHERE id_user = ?",
-    [nome, telefone, id_empresa, id]
-  );
-  return result;
+const getAllUsuarios = async () => {
+  const [rows]: any = await connection.execute('SELECT * FROM Usuario')
+  return rows
 }
 
-export async function deletarUsuario(id: number) {
-  const [result]: any = await pool.query(
-    "DELETE FROM Usuario WHERE id_user = ?",
+const getUsuarioById = async (id: number) => {
+  const [[usuario]]: any = await connection.execute(
+    'SELECT * FROM Usuario WHERE id_user = ?',
     [id]
-  );
-  return result;
+  )
+  return usuario
 }
 
-export async function buscarUsuarioPorId(id: number) {
-  const [rows]: any = await pool.query(
-    "SELECT * FROM Usuario WHERE id_user = ?",
+const updateUsuario = async (
+  id: number,
+  usuario: Partial<Omit<Usuario, 'papel'>> // evita alterar papel por padrão
+) => {
+  const fields = ['nome', 'telefone', 'id_empresa']
+
+  const { setClauses, values } = Object.entries(usuario).reduce(
+    (acc, [key, value]) => {
+      if (fields.includes(key)) {
+        acc.setClauses.push(`${key} = ?`)
+        acc.values.push(value)
+      }
+      return acc
+    },
+    { setClauses: [] as string[], values: [] as any[] }
+  )
+
+  if (setClauses.length === 0) {
+    throw new Error('Nenhum campo válido para atualização.')
+  }
+
+  const query = `UPDATE Usuario SET ${setClauses.join(', ')} WHERE id_user = ?`
+  values.push(id)
+
+  const [{ affectedRows }]: any = await connection.execute(query, values)
+  return affectedRows
+}
+
+const deleteUsuario = async (id: number) => {
+  const [{ affectedRows }]: any = await connection.execute(
+    'DELETE FROM Usuario WHERE id_user = ?',
     [id]
-  );
-  return Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
+  )
+  return affectedRows
+}
+
+export default {
+  createUsuario,
+  getAllUsuarios,
+  getUsuarioById,
+  updateUsuario,
+  deleteUsuario,
 }
