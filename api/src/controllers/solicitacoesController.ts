@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { criarSolicitacao, listarSolicitacoes } from "../services/solicitacoesService";
+import { criarSolicitacao, listarSolicitacoes } from "../models/solicitacoesModel";
 
 export async function criarSolicitacaoController(req: Request, res: Response) {
   const { id_usuario, tipo_solicitacao, status } = req.body;

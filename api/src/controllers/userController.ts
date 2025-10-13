@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { criarUsuario, listarUsuarios, atualizarUsuario, deletarUsuario, buscarUsuarioPorId } from "../services/userService";
+import { criarUsuario, listarUsuarios, atualizarUsuario, deletarUsuario, buscarUsuarioPorId } from "../models/userModel";
 
 export async function criarUsuarioController(req: Request, res: Response) {
   const { nome, celular, id_empresa } = req.body;

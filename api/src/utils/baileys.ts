@@ -8,7 +8,7 @@ import makeWASocket, {
 import pino from "pino";
 import qrcode from "qrcode-terminal";
 import { Boom } from "@hapi/boom";
-import { addMensagem } from "../services/messageService";
+import { addMensagem } from "../models/messageModel";
 import moment from "moment-timezone";
 
 let globalSock: ReturnType<typeof makeWASocket> | null = null;

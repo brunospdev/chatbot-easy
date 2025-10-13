@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { criarAdministrador, listarAdministradores } from "../services/adminService";
+import { criarAdministrador, listarAdministradores } from "../models/adminModel";
 
 export async function criarAdministradorController(req: Request, res: Response) {
   const { nome, email, senha } = req.body;

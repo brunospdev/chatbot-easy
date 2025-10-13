@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { criarEmpresa, listarEmpresas } from "../services/empresaService";
+import { criarEmpresa, listarEmpresas } from "../models/empresaModel";
 
 export async function criarEmpresaController(req: Request, res: Response) {
   const { nome, celular, id_empresa } = req.body;

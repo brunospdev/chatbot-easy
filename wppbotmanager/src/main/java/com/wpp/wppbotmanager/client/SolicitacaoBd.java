@@ -4,30 +4,31 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.wpp.wppbotmanager.dto.EmpresaDto;
+import com.wpp.wppbotmanager.dto.SolicitacaoDto;
 
 @Component
-public class EmpresaBd {
+public class SolicitacaoBd {
 
-  private final WebClient empresaTb;
+  private final WebClient solicitacaoTb;
 
-  public EmpresaBd(WebClient.Builder builder) {
-    this.empresaTb = builder
-        .baseUrl("http://localhost:3001/empresa")
-        .build();
+  public SolicitacaoBd(WebClient.Builder builder) {
+    this.solicitacaoTb = builder
+      .baseUrl("http://localhost:3001/Solicitacao")
+      .build();
   }
 
-  public String getEmpresa() {
-    return empresaTb.get()
-      .uri("/listarEmpresa")
+  public String getSolicitacao() {
+    return solicitacaoTb.get()
+      .uri("/listarsolic")
       .retrieve()
       .bodyToMono(String.class)
       .doOnError(e -> System.err.println("Erro ao chamar API TS: " + e.getMessage()))
       .block();
   }
 
-  public String postEmpresa(EmpresaDto request) {
-    return empresaTb.post()
-    .uri("/criarEmpresa")
+  public String postSolicitacao(SolicitacaoDto request) {
+    return solicitacaoTb.post()
+    .uri("/criarsolic")
     .header("Content-Type", "application/json")
     .bodyValue(request)
     .retrieve()

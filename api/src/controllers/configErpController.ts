@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { criarConfiguracaoErp, listarConfiguracoesErp } from "../services/configErpService";
+import { criarConfiguracaoErp, listarConfiguracoesErp } from "../models/configErpModel";
 
 export async function criarConfiguracaoErpController(req: Request, res: Response) {
   const { id_empresa, url_api, token_api, status } = req.body;
