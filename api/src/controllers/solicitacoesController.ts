@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { criarSolicitacao, listarSolicitacoes } from "../services/solicitacoesService";
+import solicitacoesModel from "../models/solicitacoesModel";
 
 export async function criarSolicitacaoController(req: Request, res: Response) {
   const { id_usuario, tipo_solicitacao, status } = req.body;
@@ -9,7 +9,7 @@ export async function criarSolicitacaoController(req: Request, res: Response) {
   }
 
   try {
-    const id_solicitacao = await criarSolicitacao(id_usuario, tipo_solicitacao, status);
+    const id_solicitacao = await solicitacoesModel.createSolicitacao({id_usuario, tipo_solicitacao, status});
     res.status(201).json({ id_solicitacao, id_usuario, tipo_solicitacao, status });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -18,7 +18,7 @@ export async function criarSolicitacaoController(req: Request, res: Response) {
 
 export async function listarSolicitacoesController(_req: Request, res: Response) {
   try {
-    const solicitacoes = await listarSolicitacoes();
+    const solicitacoes = await solicitacoesModel.getAllSolicitacoes();
     res.json(solicitacoes);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
