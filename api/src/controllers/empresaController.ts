@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { criarEmpresa, listarEmpresas } from "../models/empresaModel";
+import empresaModel from "../models/empresaModel";
 
 export async function criarEmpresaController(req: Request, res: Response) {
   const { nome, celular, id_empresa } = req.body;
@@ -9,7 +9,7 @@ export async function criarEmpresaController(req: Request, res: Response) {
   }
 
   try {
-    const id_usuario = await criarEmpresa(nome, celular || null, id_empresa);
+    const id_usuario = await empresaModel.createEmpresa({nome, celular, id_empresa});
     res.status(201).json({ id_usuario, nome, celular, id_empresa });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -18,7 +18,7 @@ export async function criarEmpresaController(req: Request, res: Response) {
 
 export async function listarEmpresasController(_req: Request, res: Response) {
   try {
-    const empresas = await listarEmpresas();
+    const empresas = await empresaModel.getAllEmpresas();
     res.json(empresas);
   } catch (err: any) {
     res.status(500).json({ error: err.message });

@@ -10,9 +10,9 @@ const createEmpresa = async ({ nome, celular, id_empresa }: Empresa) => {
   const [{ insertId }]: any = await connection.execute(
     `INSERT INTO Empresa (nome, celular, id_empresa) VALUES (?, ?, ?)`,
     [nome, celular ?? null, id_empresa]
-  )
-  return insertId
-}
+  );
+  return insertId;
+};
 
 const getAllEmpresas = async () => {
   const [rows]: any = await connection.execute('SELECT * FROM Empresa')

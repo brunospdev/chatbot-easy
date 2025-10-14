@@ -27,7 +27,7 @@ export async function listarUsuariosController(_req: Request, res: Response) {
   }
 }
 
-(req: Request, res: Response) {
+export async function atualizarUsuarioController(req: Request, res: Response) {
   const { id } = req.params;
   const { nome, telefone, id_empresa } = req.body;
 

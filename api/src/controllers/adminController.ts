@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { criarAdministrador, listarAdministradores } from "../models/adminModel";
+import adminModel from "../models/adminModel";
 
 export async function criarAdministradorController(req: Request, res: Response) {
   const { nome, email, senha } = req.body;
@@ -9,7 +9,7 @@ export async function criarAdministradorController(req: Request, res: Response) 
   }
 
   try {
-    const id_admin = await criarAdministrador(nome, email, senha);
+    const id_admin = await adminModel.createAdmin({nome, email, senha});
     return res.status(201).json({ id_admin, nome, email });
   } catch (err: any) {
     console.error("Erro ao criar administrador:", err);
@@ -24,7 +24,7 @@ export async function criarAdministradorController(req: Request, res: Response) 
 
 export async function listarAdministradoresController(_req: Request, res: Response) {
   try {
-    const admins = await listarAdministradores();
+    const admins = await adminModel.getAllAdmins();
     return res.json(admins);
   } catch (err: any) {
     console.error("Erro ao listar administradores:", err);
