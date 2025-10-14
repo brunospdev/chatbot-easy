@@ -47,11 +47,24 @@ export async function connectToWhatsApp() {
     const msg = messages[0];
     if (!msg.message || msg.key.fromMe) return;
 
+    let textoMensagem = "";
+    if (msg.message.conversation) {
+      textoMensagem = msg.message.conversation;
+    } else if (msg.message.extendedTextMessage?.text) {
+      textoMensagem = msg.message.extendedTextMessage.text;
+    } else if (msg.message.imageMessage) {
+      textoMensagem = "[Imagem recebida]"
+    } else if (msg.message.videoMessage) {
+      textoMensagem = "[Video recebido]"
+    } else if (msg.message.stickerMessage) {
+      textoMensagem = "[Sticker recebido]"
+    }
+
     addMensagem({
       id: msg.key.id,
       from: msg.key.remoteJid,
       nome: msg.pushName || "Desconhecido",
-      texto: msg.message.conversation || msg.message.extendedTextMessage?.text || "",
+      texto: textoMensagem || "",
       data: new Date().toISOString(),
     });
   });
