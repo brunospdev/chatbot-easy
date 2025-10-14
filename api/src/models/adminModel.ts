@@ -1,20 +1,20 @@
 import connection from '../db'
 import bcrypt from 'bcrypt'
 
-interface Admin {
+export interface Admin {
   nome: string
   email: string
   senha: string
 }
 
 const getAllAdmins = async () => {
-  const [rows]: any = await connection.execute('SELECT * FROM Administrador')
+  const [rows]: any = await connection.execute('SELECT id, nome, email FROM Administrador')
   return rows
 }
 
 const getAdminById = async (id: number) => {
   const [[result]]: any = await connection.execute(
-    'SELECT * FROM Administrador WHERE id = ?',
+    'SELECT id, nome, email FROM Administrador WHERE id = ?',
     [id]
   )
   return result
@@ -22,7 +22,7 @@ const getAdminById = async (id: number) => {
 
 const getAdminByEmail = async (email: string) => {
   const [[result]]: any = await connection.execute(
-    'SELECT * FROM Administrador WHERE email = ?',
+    'SELECT id, nome, email FROM Administrador WHERE email = ?',
     [email]
   )
   return result

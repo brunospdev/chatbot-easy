@@ -1,5 +1,6 @@
 import adminModel from "../models/adminModel";
 import schemas from "./validations/schemas";
+import type { Admin } from '../models/adminModel';
 
 const getAllAdmin = async () => {
   const allAdmin = await adminModel.getAllAdmins();
@@ -26,7 +27,7 @@ const getAdminById = async (id: number) => {
   }
 }
 
-const createAdmin = async (userAdmin: any) => {
+const createAdmin = async (userAdmin: Admin) => {
   const validateAdmin = schemas.adminSchema.validate(userAdmin);
   if(validateAdmin.error) {
     return {
@@ -43,7 +44,7 @@ const createAdmin = async (userAdmin: any) => {
   }
 }
 
-const updateAdmin = async (id: number, userAdmin: any) => {
+const updateAdmin = async (id: number, userAdmin: Partial<Admin>) => {
   const userAdminExists = await adminModel.getAdminById(id);
   if(!userAdminExists) {
     return {

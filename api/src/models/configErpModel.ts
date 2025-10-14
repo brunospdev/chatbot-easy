@@ -1,6 +1,6 @@
 import connection from '../db'
 
-interface ConfiguracaoErp {
+export interface ConfiguracaoErp {
   id_empresa: number
   url_api: string
   token_api: string
