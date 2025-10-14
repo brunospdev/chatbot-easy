@@ -1,9 +1,10 @@
 import app from "./app"
-import { connectToWhatsApp } from "./utils/baileys"
+import { connectToWhatsApp } from './utils/baileys';
 
-const PORT = 3000
+
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, async () => {
-  console.log(`API rodando em http://localhost:${PORT}`)
-  await connectToWhatsApp()
-})
+  console.log(`API rodando em http://localhost:${PORT}`);
+  await connectToWhatsApp();
+});

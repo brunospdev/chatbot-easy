@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { getMensagens, enviarMensagem } from "../services/messageService"
+import { getMensagens, enviarMensagem } from "../models/messageModel"
 
 export async function sendMessage(req: Request, res: Response) {
   try {

@@ -8,7 +8,8 @@ import makeWASocket, {
 import pino from "pino";
 import qrcode from "qrcode-terminal";
 import { Boom } from "@hapi/boom";
-import { addMensagem } from "../services/messageService";
+import { addMensagem } from "../models/messageModel";
+import moment from "moment-timezone";
 
 let globalSock: ReturnType<typeof makeWASocket> | null = null;
 
@@ -47,12 +48,31 @@ export async function connectToWhatsApp() {
     const msg = messages[0];
     if (!msg.message || msg.key.fromMe) return;
 
+    let textoMensagem = "";
+    if (msg.message.conversation) {
+      textoMensagem = msg.message.conversation;
+    } else if (msg.message.extendedTextMessage?.text) {
+      textoMensagem = msg.message.extendedTextMessage.text;
+    } else if (msg.message.imageMessage) {
+      textoMensagem = "[Imagem recebida]"
+    } else if (msg.message.videoMessage) {
+      textoMensagem = "[Video recebido]"
+    } else if (msg.message.stickerMessage) {
+      textoMensagem = "[Sticker recebido]"
+    }
+
+    const sender = msg.key.remoteJid
+    const senderNumber = sender?.replace(/@s\.whatsapp\.net$/, "") || "";
+
+    const zona = "America/Sao_Paulo";
+
     addMensagem({
       id: msg.key.id,
-      from: msg.key.remoteJid,
+      from: senderNumber,
       nome: msg.pushName || "Desconhecido",
-      texto: msg.message.conversation || msg.message.extendedTextMessage?.text || "",
-      data: new Date().toISOString(),
+      texto: textoMensagem || "",
+      data : moment().tz(zona).format("DD-MM-YYYY"),
+      hora : moment().tz(zona).format("HH:mm")
     });
   });
 }

@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "root@resibosta@linehpika" # senha do root
+      MYSQL_DATABASE: easy           # banco inicial
+      MYSQL_USER: residencia                   # usuário para equipe
+      MYSQL_PASSWORD: "senha@123" # senha do usuário
+    ports:
+      - "3306:3306"                      # expõe localmente também
+    networks:
+      - tunelnet
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok-mysql
+    restart: always
+    command: tcp mysql:3306
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}  # pega do arquivo .env
+    depends_on:
+      - mysql
+    networks:
+      - tunelnet
+    ports:
+      - "4040:4040"                      # API do ngrok (para ver status)
+
+networks:
+  tunelnet:
+    driver: bridge
