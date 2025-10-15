@@ -44,8 +44,54 @@ const createConfig = async (configErp: ConfiguracaoErp) => {
   }
 }
 
+const updateConfig = async (id: number, configErp: Partial<ConfiguracaoErp>) => {
+  const configErpExists = await configErpModel.getConfiguracaoErpById(id);
+  if(!configErpExists) {
+    return {
+      type: 'error',
+      message: 'Configuração não foi encontrada',
+      status: 404
+    }
+  }
+  const validateConfig = schemas.configErpSchema.validate(configErp);
+    if(validateConfig.error) {
+      return {
+        type: 'error',
+        message: validateConfig.error.details[0].message,
+        status: 422
+      }
+    }
+
+    await configErpModel.updateConfiguracaoErp(id, configErp);
+    return {
+      type: null,
+      message: 'Configuração atualizada com sucesso',
+      status: 201
+    }
+}
+
+const deleteConfig = async (id: number) => {
+  const configErpExists = await configErpModel.getConfiguracaoErpById(id);
+  if(!configErpExists) {
+    return {
+      type: 'error',
+      message: 'Configuração não foi encontrada',
+      status: 404
+    }
+  }
+
+  await configErpModel.deleteConfiguracaoErp(id);
+  return {
+    type: null,
+    message: "Configuração deletada com sucesso",
+    status: 200
+  }
+}
+
 export default {
   getAllConfig,
   getConfigById,
-  createConfig
+  createConfig,
+  updateConfig,
+  deleteConfig
 }

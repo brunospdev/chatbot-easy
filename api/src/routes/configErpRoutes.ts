@@ -1,9 +1,12 @@
 import { Router } from "express";
-import { criarConfiguracaoErpController, listarConfiguracoesErpController } from "../controllers/configErpController";
+import configErpController from "../controllers/configErpController";
 
 const router = Router();
 
-router.post("/cconfigerp", criarConfiguracaoErpController);
-router.get("/lconfigerp", listarConfiguracoesErpController);
+router.get("/lconfigerp", configErpController.getAllConfig);
+router.get("/lconfigerp/:id", configErpController.getConfigById);
+router.post("/cconfigerp", configErpController.createConfig);
+router.put("/uconfigerp/:id", configErpController.updateConfig);
+router.delete("/dconfigerp/:id", configErpController.deleteConfig);
 
 export default router;

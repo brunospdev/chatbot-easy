@@ -18,7 +18,7 @@ public class AdministradorBd {
 
   public String getAdmin() {
     return adminTb.get()
-      .uri("/listaradm")
+      .uri("/ladm")
       .retrieve()
       .bodyToMono(String.class)
       .doOnError(e -> System.err.println("Erro ao chamar API TS: " + e.getMessage()))
@@ -27,7 +27,7 @@ public class AdministradorBd {
 
   public String postAdmin(AdministradorDto request) {
     return adminTb.post()
-    .uri("/criarAdmin")
+    .uri("/cadm")
     .header("Content-Type", "application/json")
     .bodyValue(request)
     .retrieve()

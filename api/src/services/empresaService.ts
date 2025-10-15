@@ -77,10 +77,37 @@ const deleteEmpresa = async (id: number) => {
     
 }
 
+const updateEmpresa = async (id: number, empresa: Partial<Empresa>) => {
+  const empresaExists = await empresaModel.getEmpresaById(id);
+  if(!empresaExists) {
+    return {
+      type: 'error',
+      message: 'Empresa não foi encontrada',
+      status: 404
+    }
+  }
+  const validateEmpresa = schemas.empresaSchema.validate(empresa);
+    if(validateEmpresa.error) {
+      return {
+        type: 'error',
+        message: validateEmpresa.error.details[0].message,
+        status: 422
+      }
+    }
+
+    await empresaModel.updateEmpresa(id, empresa);
+    return {
+      type: null,
+      message: 'Empresa atualizada com sucesso',
+      status: 200
+    }
+}
+
 export default {
     getAllEmpresa,
     getEmpresaById,
     getEmpresaByNome,
     createEmpresa,
-    deleteEmpresa
+    deleteEmpresa,
+    updateEmpresa
 }

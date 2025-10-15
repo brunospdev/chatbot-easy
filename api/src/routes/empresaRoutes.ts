@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { criarEmpresaController, listarEmpresasController } from "../controllers/empresaController";
+import empresaController from "../controllers/empresaController";
 
 const router = Router();
 
-router.post("/criarEmpresa", criarEmpresaController);
-router.get("/listarEmpresa", listarEmpresasController);
+router.get("/listarEmpresa", empresaController.getAllEmpresa);
+router.post("/criarEmpresa", empresaController.createEmpresa);
 
 export default router;
