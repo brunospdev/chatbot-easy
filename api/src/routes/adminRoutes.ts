@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { criarAdministradorController, listarAdministradoresController } from "../controllers/adminController";
-
+import adminController from "../controllers/adminController";
 const router = Router();
 
-router.post("/criaradm", criarAdministradorController);
-router.get("/listaradm", listarAdministradoresController);
+router.get("/ladm", adminController.getAllAdmin);
+router.get("/ladm/:id", adminController.getAdminById);
+router.post("/cadm", adminController.createAdmin);
+router.put("/uadm/:id", adminController.updateAdmin);
+router.delete("/dadm/:id", adminController.deleteAdmin);
 
 export default router;

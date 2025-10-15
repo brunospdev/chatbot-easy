@@ -1,6 +1,6 @@
 import connection from '../db'
 
-interface Usuario {
+export interface Usuario {
   nome: string
   telefone?: string | null
   papel: number

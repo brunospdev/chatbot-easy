@@ -1,6 +1,6 @@
 import connection from '../db'
 
-interface Solicitacao {
+export interface Solicitacao {
   id_usuario: number
   tipo_solicitacao: string
   status: string

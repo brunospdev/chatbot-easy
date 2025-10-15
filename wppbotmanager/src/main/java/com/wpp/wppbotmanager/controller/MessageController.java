@@ -31,3 +31,4 @@ public class MessageController {
         return ResponseEntity.ok("Mensagem recebida com sucesso");
     }
 }
+ 
