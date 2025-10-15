@@ -1,26 +1,20 @@
 import { Request, Response } from "express";
-import solicitacoesModel from "../models/solicitacoesModel";
+import solicitacoesService from "../services/solicitacoesService";
 
-export async function criarSolicitacaoController(req: Request, res: Response) {
-  const { id_usuario, tipo_solicitacao, status } = req.body;
-
-  if (!id_usuario || !tipo_solicitacao || !status) {
-    return res.status(400).json({ error: "Todos os campos são obrigatórios." });
-  }
-
-  try {
-    const id_solicitacao = await solicitacoesModel.createSolicitacao({id_usuario, tipo_solicitacao, status});
-    res.status(201).json({ id_solicitacao, id_usuario, tipo_solicitacao, status });
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
+const createSolicitacao = async (req: Request, res: Response) => {
+    const solicitacao = req.body;
+    const { type, message, status } = await solicitacoesService.createSolicitacao(solicitacao);
+    if (type) {
+        return res.status(status).json({ message });
+    }
+    return res.status(201).json({ message });
 }
 
-export async function listarSolicitacoesController(_req: Request, res: Response) {
-  try {
-    const solicitacoes = await solicitacoesModel.getAllSolicitacoes();
-    res.json(solicitacoes);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
+const listarSolicitacoes = async (req: Request, res: Response) => {
+    const { type, message, status } = await solicitacoesService.getAllSolicitacoes();
+    if (type) {
+        return res.status(status).json({ message });
+    }
+    return res.status(200).json({ message });
 }
+
