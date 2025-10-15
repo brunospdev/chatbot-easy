@@ -2,7 +2,6 @@ package com.wpp.wppbotmanager.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lowagie.text.*;
-import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.wpp.wppbotmanager.dto.Lancamento;
@@ -13,8 +12,6 @@ import org.springframework.stereotype.Service;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.util.Locale;
 
