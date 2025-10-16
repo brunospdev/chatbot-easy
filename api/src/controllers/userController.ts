@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import userService from "../services/userService";
 
-const createUser = async (req: Request, res: Response) => {
+const criarUsuario = async (req: Request, res: Response) => {
     const user = req.body;
     const { type, message, status } = await userService.createUsuario(user);
     if (type) {
@@ -39,7 +39,7 @@ const deleteUsuario = async (req: Request, res: Response) => {
     return res.status(201).json({ message });
 }
 
-const getUserById = async (req: Request, res: Response) => {
+const getUsuarioById = async (req: Request, res: Response) => {
     const { id } = req.params;
     const nId = Number(id)
     const { type, message, status } = await userService.getUserById(nId);
@@ -47,4 +47,12 @@ const getUserById = async (req: Request, res: Response) => {
         return res.status(status).json({ message })
     }
     return res.status(status).json(message)
+}
+
+export default {
+    criarUsuario,
+    listarUsuarios,
+    updateUsuario,
+    deleteUsuario,
+    getUsuarioById
 }
