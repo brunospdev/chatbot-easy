@@ -1,26 +1,58 @@
 import { Request, Response } from "express";
-import { criarUsuario, listarUsuarios } from "../services/userService";
+import userService from "../services/userService";
 
-export async function criarUsuarioController(req: Request, res: Response) {
-  const { nome, celular, id_empresa } = req.body;
-
-  if (!nome || !id_empresa) {
-    return res.status(400).json({ error: "Nome e id_empresa são obrigatórios." });
-  }
-
-  try {
-    const id_usuario = await criarUsuario(nome, celular || null, id_empresa);
-    res.status(201).json({ id_usuario, nome, celular, id_empresa });
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
+const criarUsuario = async (req: Request, res: Response) => {
+    const user = req.body;
+    const { type, message, status } = await userService.createUsuario(user);
+    if (type) {
+        return res.status(status).json({ message });
+    }
+    return res.status(201).json({ message });
 }
 
-export async function listarUsuariosController(_req: Request, res: Response) {
-  try {
-    const usuarios = await listarUsuarios();
-    res.json(usuarios);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
+const listarUsuarios = async (req: Request, res: Response) => {
+    const { type, message, status } = await userService.getAllUser();
+    if (type) {
+        return res.status(status).json({ message });
+    }
+    return res.status(200).json({ message });
+}
+
+const updateUsuario = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const nId = Number(id)
+    const usuario = req.body;
+    const { type, message, status } = await userService.updateUsuario(nId, usuario);
+    if (type) {
+        return res.status(status).json({ message });
+    }
+    return res.status(201).json({ message });
+}
+
+const deleteUsuario = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const nId = Number(id)
+    const { type, message, status } = await userService.deleteUsuario(nId);
+    if (type) {
+        return res.status(status).json({ message });
+    }
+    return res.status(201).json({ message });
+}
+
+const getUsuarioById = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const nId = Number(id)
+    const { type, message, status } = await userService.getUserById(nId);
+    if (type) {
+        return res.status(status).json({ message })
+    }
+    return res.status(status).json(message)
+}
+
+export default {
+    criarUsuario,
+    listarUsuarios,
+    updateUsuario,
+    deleteUsuario,
+    getUsuarioById
 }

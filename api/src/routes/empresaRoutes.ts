@@ -1,9 +1,12 @@
 import { Router } from "express";
-import { criarEmpresaController, listarEmpresasController } from "../controllers/empresaController";
+import empresaController from "../controllers/empresaController";
 
 const router = Router();
 
-router.post("/criarEmpresa", criarEmpresaController);
-router.get("/listarEmpresa", listarEmpresasController);
+router.get("/listarEmpresa", empresaController.getAllEmpresa);
+router.get("/listarempresa/:id", empresaController.getEmpresaById);
+router.post("/criarEmpresa", empresaController.createEmpresa);
+router.put("/uempresa", empresaController.updateEmpresa);
+router.delete("/dempresa", empresaController.deleteEmpresa);
 
 export default router;

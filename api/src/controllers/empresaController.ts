@@ -1,26 +1,55 @@
 import { Request, Response } from "express";
-import { criarEmpresa, listarEmpresas } from "../services/empresaService";
+import empresaService from "../services/empresaService";
 
-export async function criarEmpresaController(req: Request, res: Response) {
-  const { nome, celular, id_empresa } = req.body;
-
-  if (!nome || !id_empresa) {
-    return res.status(400).json({ error: "Nome e id_empresa são obrigatórios." });
-  }
-
-  try {
-    const id_usuario = await criarEmpresa(nome, celular || null, id_empresa);
-    res.status(201).json({ id_usuario, nome, celular, id_empresa });
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
+const getAllEmpresa = async (req: Request, res: Response) => {
+  const { message, status } = await empresaService.getAllEmpresa();
+  return res.status(status).json(message)
 }
 
-export async function listarEmpresasController(_req: Request, res: Response) {
-  try {
-    const empresas = await listarEmpresas();
-    res.json(empresas);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+const getEmpresaById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const nId = Number(id)
+  const { type, message, status } = await empresaService.getEmpresaById(nId);
+  if (type) {
+  return res.status(status).json({ message })
   }
+  return res.status(status).json(message)
+}
+
+const createEmpresa = async (req: Request, res: Response) => {
+  const empresa = req.body;
+  const { type, message, status } = await empresaService.createEmpresa(empresa);
+  if (type) {
+    return res.status(status).json({ message });
+  }
+  return res.status(201).json({ message });
+}
+
+const updateEmpresa = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const nId = Number(id)
+  const empresa = req.body;
+  const { type, message, status } = await empresaService.updateEmpresa(nId, empresa);
+  if (type) {
+    return res.status(status).json({ message });
+  }
+  return res.status(201).json({ message });
+}
+
+const deleteEmpresa = async  (req: Request, res: Response) => {
+const { id } = req.params;
+  const nId = Number(id)
+  const { type, message, status } = await empresaService.deleteEmpresa(nId);
+  if (type) {
+    return res.status(status).json({ message });
+  }
+  return res.status(201).json({ message });
+}
+
+export default {
+  getAllEmpresa,
+  getEmpresaById,
+  createEmpresa,
+  updateEmpresa,
+  deleteEmpresa
 }
