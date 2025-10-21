@@ -3,7 +3,7 @@ package com.wpp.wppbotmanager.client;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.wpp.wppbotmanager.dto.EmpresaDto;
+
 import com.wpp.wppbotmanager.dto.SolicitacaoDto;
 
 @Component

@@ -4,14 +4,15 @@ export interface Usuario {
   nome: string
   telefone?: string | null
   papel: number
+  atividade: number
   id_empresa?: number | null
 }
 
 
-const createUsuario = async ({ nome, telefone, papel, id_empresa }: Usuario) => {
+const createUsuario = async ({ nome, telefone, papel, atividade, id_empresa }: Usuario) => {
   const [{ insertId }]: any = await connection.execute(
-    `INSERT INTO Usuario (nome, telefone, papel, id_empresa) VALUES (?, ?, ?, ?)`,
-    [nome, telefone ?? null, papel, id_empresa ?? null]
+    `INSERT INTO Usuario (nome, telefone, papel, atividade, id_empresa) VALUES (?, ?, ?, ?, ?)`,
+    [nome, telefone ?? null, papel, atividade, id_empresa ?? null]
   )
   return insertId
 }
@@ -20,20 +21,27 @@ const getAllUsuarios = async () => {
   const [rows]: any = await connection.execute('SELECT * FROM Usuario')
   return rows
 }
+const getUsuarioByNumber = async (telefone: String) => {
+  const [[usuario]]: any = await connection.execute(
+    'SELECT * FROM Usuario WHERE telefone = ?',
+    [telefone]
+  )
+  return usuario || null
+}
 
 const getUsuarioById = async (id: number) => {
   const [[usuario]]: any = await connection.execute(
     'SELECT * FROM Usuario WHERE id_user = ?',
     [id]
   )
-  return usuario
+  return usuario || null
 }
 
 const updateUsuario = async (
   id: number,
   usuario: Partial<Omit<Usuario, 'papel'>> // evita alterar papel por padrão
 ) => {
-  const fields = ['nome', 'telefone', 'id_empresa']
+  const fields = ['nome', 'telefone','atividade',  'id_empresa']
 
   const { setClauses, values } = Object.entries(usuario).reduce(
     (acc, [key, value]) => {
@@ -71,4 +79,5 @@ export default {
   getUsuarioById,
   updateUsuario,
   deleteUsuario,
+  getUsuarioByNumber
 }

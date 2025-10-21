@@ -1,19 +1,27 @@
 package com.wpp.wppbotmanager.controller;
 
 import com.wpp.wppbotmanager.service.MessageService;
+import com.wpp.wppbotmanager.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wpp.wppbotmanager.dto.ReceiveMessageRequest;
+import com.wpp.wppbotmanager.dto.UserDto;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.wpp.wppbotmanager.dto.ReceiveMessageRequest; 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List; 
 
 @RestController
 @RequestMapping("/wpp/messages")
 public class MessageController {
 
     private final MessageService messageService;
+    private final UserService userService;
 
     public MessageController(MessageService messageService) {
         this.messageService = messageService;
+        this.userService = null;
     }
 
     @GetMapping
@@ -28,7 +36,35 @@ public class MessageController {
     @PostMapping("/receber/msg")
     public ResponseEntity<?> receiveMessage(@RequestBody ReceiveMessageRequest request) {
         String numUser = request.getFrom();
-        return ResponseEntity.ok("Mensagem recebida com sucesso");
+        String atividade = request.getStatus();
+
+        
+        try{
+            String userJson = userService.getUser();
+            ObjectMapper mapper = new ObjectMapper();
+            List<UserDto> usuarios = mapper.readValue(userJson, new TypeReference<List<UserDto>>() {});
+            
+            boolean existe = usuarios.stream()
+                .filter(u -> u.getTelefone() != null)
+                .anyMatch(u -> u.getTelefone().equals(numUser));
+            
+            
+            if (existe) {
+                if("ATIVO".equalsIgnoreCase(atividade)) {
+                    return ResponseEntity.ok("Mensagem recebida e usuário ativo");
+            
+                } if("INATIVO".equalsIgnoreCase(atividade)){
+                    return ResponseEntity.ok("Mensagem recebida e usuário inativo");
+                }
+                else{
+                    return ResponseEntity.ok("Mensagem recebida e status de atividade desconhecido");
+                }
+            }
+            else {
+              return ResponseEntity.status(404).body("Usuário não encontrado no banco ");
+            }
+        }catch(Exception e){
+            return ResponseEntity.status(500).body("Erro ao processar usuários: " + e.getMessage());
+        }
     }
 }
- 

@@ -10,6 +10,7 @@ import lombok.Setter;
 public class ReceiveMessageRequest {    
     private String from;
     private String nome;
+    private String status;
     private String texto;
     private String data;
     private String hora;
