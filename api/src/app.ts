@@ -5,6 +5,7 @@ import adminRoutes from "./routes/adminRoutes";
 import solicitacoesRoutes from "./routes/solicitacoesRoutes";
 import configErpRoutes from "./routes/configErpRoutes";
 import userRoutes from "./routes/userRoutes";
+import omieRoutes from "./routes/omieRoutes";
 
 const app = express()
 app.use(express.json())
@@ -15,5 +16,6 @@ app.use("/admin", adminRoutes)
 app.use("/solicitacoes", solicitacoesRoutes)
 app.use("/config-erp", configErpRoutes)
 app.use("/users", userRoutes)
+app.use("/omie", omieRoutes);
 
 export default app
