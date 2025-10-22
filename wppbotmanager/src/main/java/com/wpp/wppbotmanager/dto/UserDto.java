@@ -1,9 +1,10 @@
 package com.wpp.wppbotmanager.dto;
 
+import com.wpp.wppbotmanager.dto.enums.atividade.Atividade;
+import com.wpp.wppbotmanager.dto.enums.papel.Papel;
+
 import lombok.Getter;
 import lombok.Setter;
-import com.wpp.wppbotmanager.dto.papel.Papel;
-import com.wpp.wppbotmanager.dto.atividade.Atividade;
 @Getter
 @Setter
 public class UserDto {
