@@ -29,6 +29,14 @@ const getUsuarioById = async (id: number) => {
   return usuario
 }
 
+const getUsuariosByEmp = async (id_empresa: number) => {
+  const [usuarios]: any = await connection.execute(
+    'SELECT * FROM Usuario WHERE id_empresa = ?',
+    [id_empresa]
+  );
+  return usuarios; 
+};
+
 const updateUsuario = async (
   id: number,
   usuario: Partial<Omit<Usuario, 'papel'>> // evita alterar papel por padrão
@@ -71,4 +79,5 @@ export default {
   getUsuarioById,
   updateUsuario,
   deleteUsuario,
+  getUsuariosByEmp,
 }

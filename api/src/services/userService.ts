@@ -11,6 +11,22 @@ const getAllUser = async () => {
         status: 200
     }    
 }
+const getUsuariosByEmp = async (id_empresa: number) => {
+  const usuarios = await userModel.getUsuariosByEmp(id_empresa);
+  if (!usuarios || usuarios.length === 0) {
+    return {
+      type: 'error',
+      message: 'Nenhum usuário encontrado para essa empresa',
+      status: 404,
+    };
+  }
+  return {
+    type: null,
+    message: usuarios,
+    status: 200,
+  };
+};
+
 const getUserById = async (id:number) => {
     const userById =  await userModel.getUsuarioById(id);
     if(!userById){
@@ -85,5 +101,6 @@ export default {
     getUserById,
     createUsuario,
     deleteUsuario,
-    updateUsuario
+    updateUsuario,
+    getUsuariosByEmp
 }
