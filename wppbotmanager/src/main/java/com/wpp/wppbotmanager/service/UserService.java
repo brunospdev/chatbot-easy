@@ -33,4 +33,10 @@ public class UserService {
   public String getUserById(Integer id) {
       return userBd.getUserById(id);
   }
+
+
+  public String getUsuariosByEmpresa(Integer idEmpresa) {
+      return userBd.getUsuariosByEmpresa(idEmpresa);
+  }
+
 }

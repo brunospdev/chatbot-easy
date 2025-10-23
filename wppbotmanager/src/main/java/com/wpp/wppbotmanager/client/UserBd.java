@@ -63,3 +63,12 @@ public class UserBd {
           .block();
   }
 }
+
+public String getUsuariosByEmpresa(Integer idEmpresa) {
+    return userTb.get()
+        .uri("/euser/{id_empresa}", idEmpresa)
+        .retrieve()
+        .bodyToMono(String.class)
+        .doOnError(e -> System.err.println("Erro ao buscar usuários da empresa: " + e.getMessage()))
+        .block();
+}
