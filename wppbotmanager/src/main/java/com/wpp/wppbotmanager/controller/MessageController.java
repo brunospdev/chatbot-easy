@@ -1,5 +1,6 @@
 package com.wpp.wppbotmanager.controller;
 
+import com.wpp.wppbotmanager.service.ChatbotService;
 import com.wpp.wppbotmanager.service.MessageService;
 import com.wpp.wppbotmanager.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,9 +18,11 @@ public class MessageController {
 
     private final MessageService messageService;
     private final UserService userService;
+    private final ChatbotService chatbotService;
 
-    public MessageController(MessageService messageService) {
+    public MessageController(MessageService messageService, ChatbotService chatbotService) {
         this.messageService = messageService;
+        this.chatbotService = chatbotService;
         this.userService = null;
     }
 
@@ -36,6 +39,7 @@ public class MessageController {
     public ResponseEntity<?> receiveMessage(@RequestBody ReceiveMessageRequest request) {
         String numUser = request.getFrom();
         String atividade = request.getStatus();
+        String texto = request.getTexto();
 
         
         try{
@@ -50,6 +54,7 @@ public class MessageController {
             
             if (existe) {
                 if("ATIVO".equalsIgnoreCase(atividade)) {
+                    chatbotService.processMessage(numUser, texto);
                     return ResponseEntity.ok("Mensagem recebida e usuário ativo");
             
                 } if("INATIVO".equalsIgnoreCase(atividade)){
