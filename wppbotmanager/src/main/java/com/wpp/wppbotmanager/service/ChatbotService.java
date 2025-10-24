@@ -132,4 +132,10 @@ public class ChatbotService {
         messageService.sendMessage(numUser, resposta);
         userStateManager.setState(numUser, proximoEstado);
     }
+    public void inactiveUser(String numUser) {
+        messageService.sendMessage(numUser, "Contate um administrador para reativar seu acesso ao chatbot.");
+    }
+    public void unknownUser(String numUser) {
+        messageService.sendMessage(numUser, "Usuário não encontrado. Por favor, contate um administrador para se cadastrar.");
+    }
 }

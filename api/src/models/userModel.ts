@@ -1,5 +1,5 @@
 import connection from '../db'
-import { RowDataPacket } from 'mysql2'
+
 
 export interface Usuario {
   nome: string
@@ -30,18 +30,11 @@ const getUsuarioByNumber = async (telefone: String) => {
   return usuario || null
 }
 const getRoleByNumber = async (telefone: String): Promise<number | null> => {
-  const [rows] = await connection.execute<
-      { papel: number }[] & RowDataPacket[]
-  >(
-      'SELECT papel FROM Usuario WHERE telefone = ?',
-      [telefone]
+  const [[papel]]: any = await connection.execute(
+    'SELECT papel FROM Usuario WHERE telefone = ?',
+    [telefone]
   )
-
-  if (rows.length === 0) {
-    return null
-  }
-
-  return rows[0].papel
+  return papel || null
 }
 
 const getUsuarioById = async (id: number) => {

@@ -40,6 +40,7 @@ public class MessageController {
         String numUser = request.getFrom();
         String atividade = request.getStatus();
         String texto = request.getTexto();
+        String papel = request.getPapel();
 
         
         try{
@@ -58,9 +59,11 @@ public class MessageController {
                     return ResponseEntity.ok("Mensagem recebida e usuário ativo");
             
                 } if("INATIVO".equalsIgnoreCase(atividade)){
+                    chatbotService.inactiveUser(numUser);
                     return ResponseEntity.ok("Mensagem recebida e usuário inativo");
                 }
                 else{
+                    chatbotService.unknownUser(numUser);
                     return ResponseEntity.ok("Mensagem recebida e status de atividade desconhecido");
                 }
             }
