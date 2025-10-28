@@ -1,0 +1,2 @@
+    curl -X POST http://localhost:3000/api/omie/relatorio-financeiro -H "Content-Type: application/json" -d "{\"appKey\": \"SUA_APP_KEY\", \"appSecret\": \"SUA_APP_SECRET\"}" > relatorio_financeiro.json
+    
