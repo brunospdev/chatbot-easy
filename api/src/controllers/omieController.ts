@@ -52,7 +52,6 @@ export async function gerarRelatorioFinanceiroGeralController(req: Request, res:
                 const chaveSimples = MAPA_CHAVES_SIMPLES[codigo] || codigo;
                 const valorFormatado = formatadorReais.format(valor);
 
-                // Substitui o espaço inquebrável (0xA0) por um espaço regular
                 detalhesFormatados[chaveSimples] = valorFormatado.replace(/\u00A0/g, ' ');
 
                 if (ehReceita(codigo)) {
