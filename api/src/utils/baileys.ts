@@ -49,6 +49,9 @@ export async function connectToWhatsApp() {
     const msg = messages[0];
     if (!msg.message || msg.key.fromMe) return;
 
+    if (msg.key.remoteJid?.endsWith("@g.us")) return;
+    if (msg.key.remoteJid?.endsWith("@newsletter")) return;
+
     let textoMensagem = "";
     if (msg.message.conversation) {
       textoMensagem = msg.message.conversation;
