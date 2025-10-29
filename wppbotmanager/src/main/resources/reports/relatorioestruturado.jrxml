@@ -13,7 +13,6 @@
 	<queryString language="jsonql">
 		<![CDATA[]]>
 	</queryString>
-	<!-- Variáveis de KPI (Indicadores) -->
 	<variable name="v_margem_lucro_liquido" class="java.lang.Double">
 		<variableExpression><![CDATA[$P{resumoGeral}.getTotal_receitas_numerico() == 0 ? 0.0 : $P{resumoGeral}.getResultado_liquido_numerico() / $P{resumoGeral}.getTotal_receitas_numerico()]]></variableExpression>
 	</variable>
@@ -57,7 +56,7 @@
 				<imageExpression><![CDATA["logo.png"]]></imageExpression>
 			</image>
 			<textField>
-				<reportElement x="319" y="20" width="170" height="20" forecolor="#808080" uuid="33797790-8f0b-4741-8b58-17ef2e2bdb22"/>
+				<reportElement x="220" y="20" width="170" height="20" forecolor="#808080" uuid="33797790-8f0b-4741-8b58-17ef2e2bdb22"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
