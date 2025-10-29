@@ -9,7 +9,6 @@ public class WebClientConfig {
 
     @Bean
     public WebClient webClient(WebClient.Builder builder) {
-        // A URL base da sua API Node.js
         return builder.baseUrl("http://localhost:3001").build();
     }
 }

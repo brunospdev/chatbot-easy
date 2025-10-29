@@ -27,6 +27,5 @@ public class OmieDTO {
             this.appKey = appKey;
             this.appSecret = appSecret;
         }
-        // ... getters
     }
 }

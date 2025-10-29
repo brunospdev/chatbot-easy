@@ -18,14 +18,11 @@ public class ResumoGeral {
     private Double parseCurrency(String value) {
         if (value == null || value.isEmpty()) return 0.0;
 
-        // Lógica de limpeza mais robusta
         String cleanValue = value
-                .replaceAll("[^\\d,-]", ""); // Remove tudo que não for dígito, vírgula ou sinal de menos
+                .replaceAll("[^\\d,-]", "");
 
-        // Troca a vírgula decimal por ponto
         cleanValue = cleanValue.replace(",", ".");
 
-        // Caso especial: se a string for apenas "-", retorna 0
         if (cleanValue.equals("-")) return 0.0;
 
         return Double.parseDouble(cleanValue);

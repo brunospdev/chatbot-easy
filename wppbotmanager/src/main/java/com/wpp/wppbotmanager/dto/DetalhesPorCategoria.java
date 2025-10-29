@@ -17,12 +17,11 @@ public class DetalhesPorCategoria {
     private String entradas_nao_operacionais;
     private String saidas_nao_operacionais;
 
-    // Método de parsing de moeda (copiado do ResumoGeral para consistência)
     private Double parseCurrency(String value) {
         if (value == null || value.isEmpty()) return 0.0;
 
         String cleanValue = value
-                .replaceAll("[^\\d,-]", ""); // Remove tudo que não for dígito, vírgula ou sinal de menos
+                .replaceAll("[^\\d,-]", "");
 
         cleanValue = cleanValue.replace(",", ".");
 
@@ -31,7 +30,6 @@ public class DetalhesPorCategoria {
         return Double.parseDouble(cleanValue);
     }
 
-    // Métodos numéricos para os campos
     public Double getReceitas_operacionais_numerico() {
         return parseCurrency(this.receitas_operacionais);
     }
