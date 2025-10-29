@@ -69,7 +69,8 @@
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.21.3</version> </dependency>
+            <version>6.21.3</version>
+        </dependency>
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports-fonts</artifactId>
@@ -89,7 +90,44 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+            <!-- Plugin para o funcionamendo do JasperSoft-->
+            <plugin>
+                <groupId>com.alexnederlof</groupId>
+                <artifactId>jasperreports-plugin</artifactId>
+                <version>2.8</version>
+                <executions>
+                    <execution>
+                        <!-- CORRIGIDO: Mudado para 'process-classes' -->
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>jasper</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- Pasta onde estão seus arquivos .jrxml -->
+                    <sourceDirectory>${project.basedir}/src/main/resources/reports</sourceDirectory>
+                    <!-- Pasta onde os arquivos .jasper compilados serão gerados -->
+                    <outputDirectory>${project.build.outputDirectory}/reports</outputDirectory>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <!-- ADICIONADO: Repositórios para encontrar as dependências do Jasper -->
+    <repositories>
+        <repository>
+            <id>jaspersoft-repo</id>
+            <url>https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jaspersoft-repo</id>
+            <url>https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>

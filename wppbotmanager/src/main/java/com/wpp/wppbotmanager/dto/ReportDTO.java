@@ -1,6 +1,5 @@
 package com.wpp.wppbotmanager.dto;
 
-import org.springframework.stereotype.Service;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
@@ -10,8 +9,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-@Service
-public class ReportService {
+public class ReportDTO {
 
 
     public byte[] generatePdfReport(List<?> dataList, Map<String, Object> parameters)
