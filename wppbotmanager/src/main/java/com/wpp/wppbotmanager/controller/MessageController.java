@@ -37,7 +37,7 @@ public class MessageController {
     }
     @PostMapping("/receber/msg")
     public ResponseEntity<?> receiveMessage(@RequestBody ReceiveMessageRequest request) {
-        String numUser = request.getFrom();
+        String numUser = request.getFrom().replaceAll("\\D", "");
         String atividade = request.getStatus();
         String texto = request.getTexto();
         String papel = request.getPapel();
@@ -48,11 +48,8 @@ public class MessageController {
             ObjectMapper mapper = new ObjectMapper();
             List<UserDto> usuarios = mapper.readValue(userJson, new TypeReference<List<UserDto>>() {});
             
-            boolean existe = usuarios.stream()
-                .filter(u -> u.getTelefone() != null)
-                .anyMatch(u -> u.getTelefone().equals(numUser));
-            
-            
+            boolean existe = usuarios.stream().map(u -> u.getTelefone() == null ? "" : u.getTelefone().replaceAll("\\D", "")).anyMatch(tel -> tel.endsWith(numUser));
+
             if (existe) {
                 if("ATIVO".equalsIgnoreCase(atividade)) {
                     chatbotService.processMessage(numUser, texto);
