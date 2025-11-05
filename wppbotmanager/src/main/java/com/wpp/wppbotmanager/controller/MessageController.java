@@ -37,35 +37,19 @@ public class MessageController {
         return messageService.sendMessage(request.getNumero(), request.getTexto());
     }
     @PostMapping("/receber/msg")
-    public ResponseEntity<?> receiveMessage(@RequestBody List<ReceiveMessageRequest> requests) {
-    try {
-        ObjectMapper mapper = new ObjectMapper();
+    public ResponseEntity<?> receiveMessage(@RequestBody ReceiveMessageRequest request) {
+        String numUser = request.getFrom().replaceAll("\\D", "");
+        String atividade = request.getStatus();
+        String texto = request.getTexto();
+        String papel = request.getPapel();
 
-        // Obtém os usuários do userService (ajuste para lista OU único objeto)
-        String userJson = userService.getUser();
-        List<UserDto> usuarios;
-
-        try {
-            // tenta ler como lista
-            usuarios = mapper.readValue(userJson, new TypeReference<List<UserDto>>() {});
-        } catch (Exception e) {
-            // se não for lista, lê como único objeto
-            UserDto usuarioUnico = mapper.readValue(userJson, UserDto.class);
-            usuarios = List.of(usuarioUnico);
-        }
-
-        // percorre todas as mensagens recebidas
-        for (ReceiveMessageRequest request : requests) {
-            String numUser = request.getFrom();
-            String atividade = request.getStatus();
-            String texto = request.getTexto();
-            String papel = request.getPapel();
-
-            boolean existe = usuarios.stream()
-                .filter(u -> u.getTelefone() != null)
-                .anyMatch(u -> u.getTelefone().equals(numUser));
-
-            chatbotService.processMessage(numUser, texto);
+        
+        try{
+            String userJson = userService.getUser();
+            ObjectMapper mapper = new ObjectMapper();
+            List<UserDto> usuarios = mapper.readValue(userJson, new TypeReference<List<UserDto>>() {});
+            
+            boolean existe = usuarios.stream().map(u -> u.getTelefone() == null ? "" : u.getTelefone().replaceAll("\\D", "")).anyMatch(tel -> tel.endsWith(numUser));
 
             if (existe) {
                 if ("ATIVO".equalsIgnoreCase(atividade)) {
