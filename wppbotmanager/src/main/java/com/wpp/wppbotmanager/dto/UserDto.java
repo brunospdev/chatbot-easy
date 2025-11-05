@@ -1,5 +1,6 @@
 package com.wpp.wppbotmanager.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wpp.wppbotmanager.dto.enums.atividade.Atividade;
 import com.wpp.wppbotmanager.dto.enums.papel.Papel;
 
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDto {
 
   private Integer id_user;

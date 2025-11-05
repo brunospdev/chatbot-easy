@@ -39,7 +39,7 @@ public class ChatbotService {
     private static final String TEXTO_MENU_GESTAO_USUARIOS =
             "1. Cadastrar usuários\n" +
             "2. Listar usuários\n" +
-            "3. Deletar usuários" +
+            "3. Deletar usuários\n" +
             "0. Voltar";
 
     private static final Map<String, String> MAPA_MENU_PRINCIPAL = Map.of(
@@ -77,7 +77,7 @@ public class ChatbotService {
 
         switch(estadoAtual) {
             case UserStateManagerService.MENU_PRINCIPAL:
-                proximoEstado = MAPA_MENU_PRINCIPAL.getOrDefault(textInput, "ESTADO_INVALIDO");
+                proximoEstado = MAPA_MENU_PRINCIPAL.getOrDefault(textInput, UserStateManagerService.MENU_PRINCIPAL);
                 break;
             case "SUBMENU_RESUMO":
                 proximoEstado = MAPA_MENU_RESUMO.getOrDefault(textInput, "ESTADO_INVALIDO");
