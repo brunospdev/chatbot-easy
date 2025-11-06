@@ -135,7 +135,7 @@ public class ChatbotService {
             case "ACESSO_NEGADO":
                 return;
             case "ESTADO_INVALIDO":
-                resposta = "⚠️ Opção inválida!\n" + TEXTO_MENU_PRINCIPAL;
+                resposta = "Opção inválida!\n" + TEXTO_MENU_PRINCIPAL;
                 proximoEstado = estadoAtual;
                 break;
         }
