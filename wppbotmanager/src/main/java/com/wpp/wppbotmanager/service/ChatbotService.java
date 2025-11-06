@@ -2,6 +2,9 @@ package com.wpp.wppbotmanager.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.wpp.wppbotmanager.dto.ReceiveMessageRequest;
 
 import java.util.Map;
 
@@ -15,26 +18,37 @@ public class ChatbotService {
         this.userStateManager = userStateManager;
         this.messageService = messageService;
     }
+    // analisa papel do usuario para liberar menu de gestao de usuarios
+    public String analisarPapel(ReceiveMessageRequest request, String textInput) {
+        String papel = request.getPapel();
+
+        if ("administrador".equalsIgnoreCase(papel)) {
+            return MAPA_MENU_GESTAO_USUARIOS.getOrDefault(textInput, "ESTADO_INVALIDO");
+        } else {
+            messageService.sendMessage(request.getFrom(), "Acesso negado. Função disponível apenas para administradores.");
+            return "ACESSO_NEGADO";
+        }
+    }
 
     private static final String TEXTO_MENU_PRINCIPAL =
-            "Olá, bem vindo ao atendimento do Chatbot Easy!\nEscolha uma opção: \n" +
-                    "1. Resumo\n" +
-                    "2. Relatório\n" +
-                    "3. Gestão de Usuários";
+            "Olá, bem-vindo ao atendimento do Chatbot Easy!\nEscolha uma opção: \n" +
+            "1. Resumo\n" +
+            "2. Relatório\n" +
+            "3. Gestão de Usuários";
 
     private static final String TEXTO_MENU_RESUMO =
-            "Escolha um intervalo:" +
-                    "1. 7 dias\n" +
-                    "2. 15 dias\n" +
-                    "3. 30 dias\n" +
-                    "0. Voltar";
+            "Escolha um intervalo:\n" +
+            "1. 7 dias\n" +
+            "2. 15 dias\n" +
+            "3. 30 dias\n" +
+            "0. Voltar";
 
     private static final String TEXTO_MENU_RELATORIO =
-            "Escolha um intervalo:" +
-                    "1. 7 dias\n" +
-                    "2. 15 dias\n" +
-                    "3. 30 dias\n" +
-                    "0. Voltar";
+            "Escolha um intervalo:\n" +
+            "1. 7 dias\n" +
+            "2. 15 dias\n" +
+            "3. 30 dias\n" +
+            "0. Voltar";
 
     private static final String TEXTO_MENU_GESTAO_USUARIOS =
             "1. Cadastrar usuários\n" +
@@ -69,15 +83,29 @@ public class ChatbotService {
             "0", UserStateManagerService.MENU_PRINCIPAL
     );
 
-    public void processMessage(String numUser, String textInput) {
+    public void processMessage(ReceiveMessageRequest request) {
+        String numUser = request.getFrom();
+        String textInput = request.getTexto();
         String estadoAtual = userStateManager.getState(numUser);
 
         String proximoEstado;
         String resposta = "";
 
-        switch(estadoAtual) {
+        switch (estadoAtual) {
             case UserStateManagerService.MENU_PRINCIPAL:
-                proximoEstado = MAPA_MENU_PRINCIPAL.getOrDefault(textInput, UserStateManagerService.MENU_PRINCIPAL);
+                if ("3".equals(textInput)) {
+                    if ("administrador".equalsIgnoreCase(request.getPapel())) {
+                        proximoEstado = "SUBMENU_GESTAO_USUARIOS";
+                    } else {
+                        messageService.sendMessage(numUser, "Função disponível apenas para administradores.");
+                        messageService.sendMessage(numUser, TEXTO_MENU_PRINCIPAL);
+                        proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
+                        userStateManager.setState(numUser, proximoEstado);
+                        return;
+                    }
+                } else {
+                    proximoEstado = MAPA_MENU_PRINCIPAL.getOrDefault(textInput, UserStateManagerService.MENU_PRINCIPAL);
+                }
                 break;
             case "SUBMENU_RESUMO":
                 proximoEstado = MAPA_MENU_RESUMO.getOrDefault(textInput, "ESTADO_INVALIDO");
@@ -86,13 +114,12 @@ public class ChatbotService {
                 proximoEstado = MAPA_MENU_RELATORIO.getOrDefault(textInput, "ESTADO_INVALIDO");
                 break;
             case "SUBMENU_GESTAO_USUARIOS":
-                proximoEstado = MAPA_MENU_GESTAO_USUARIOS.getOrDefault(textInput, "ESTADO_INVALIDO");
+                proximoEstado = analisarPapel(request, textInput);
                 break;
             default:
                 proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
         }
-
-        switch(proximoEstado) {
+        switch (proximoEstado) {
             case UserStateManagerService.MENU_PRINCIPAL:
                 resposta = TEXTO_MENU_PRINCIPAL;
                 break;
@@ -105,30 +132,13 @@ public class ChatbotService {
             case "SUBMENU_GESTAO_USUARIOS":
                 resposta = TEXTO_MENU_GESTAO_USUARIOS;
                 break;
-            case "7_DIAS_RESUMO":
-                break;
-            case "15_DIAS_RESUMO":
-                break;
-            case "30_DIAS_RESUMO":
-                break;
-            case "7_DIAS_RELATORIO":
-                break;
-            case "15_DIAS_RELATORIO":
-                break;
-            case "30_DIAS_RELATORIO":
-                break;
-            case "CADASTRAR_USUARIOS":
-                break;
-            case "LISTAR_USUARIOS":
-                break;
-            case "DELETAR_USUARIOS":
-                break;
+            case "ACESSO_NEGADO":
+                return;
             case "ESTADO_INVALIDO":
-                resposta = "Opção inválida!";
+                resposta = "⚠️ Opção inválida!\n" + TEXTO_MENU_PRINCIPAL;
                 proximoEstado = estadoAtual;
                 break;
         }
-
         messageService.sendMessage(numUser, resposta);
         userStateManager.setState(numUser, proximoEstado);
     }

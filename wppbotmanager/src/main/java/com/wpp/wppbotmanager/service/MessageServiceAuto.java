@@ -24,7 +24,7 @@ public class MessageServiceAuto {
         this.chatbotService = chatbotService;
     }
 
-    @Scheduled(fixedRate = 1000) // a cada 2 segundos (pra aliviar o servidor)
+    @Scheduled(fixedRate = 1000) // a cada 1 segundo
     public void processarMensagensAutomaticamente() {
         try {
             String json = messageService.getMessageApi();
@@ -32,7 +32,6 @@ public class MessageServiceAuto {
             List<ReceiveMessageRequest> mensagens = mapper.readValue(json, new TypeReference<>() {});
 
             for (ReceiveMessageRequest msg : mensagens) {
-                // Verifica se já processou esse ID
                 if (mensagensProcessadas.contains(msg.getId())) {
                     continue; // ignora mensagens repetidas
                 }
@@ -40,14 +39,13 @@ public class MessageServiceAuto {
                 System.out.println("Nova mensagem: " + msg.getTexto() + " de " + msg.getFrom());
 
                 if ("ativo".equalsIgnoreCase(msg.getStatus())) {
-                    chatbotService.processMessage(msg.getFrom(), msg.getTexto());
+                    chatbotService.processMessage(msg);
                 } else if ("inativo".equalsIgnoreCase(msg.getStatus())) {
                     chatbotService.inactiveUser(msg.getFrom());
                 } else {
                     chatbotService.unknownUser(msg.getFrom());
                 }
 
-                // Marca como processada
                 mensagensProcessadas.add(msg.getId());
             }
 

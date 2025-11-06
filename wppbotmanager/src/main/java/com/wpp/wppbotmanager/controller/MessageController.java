@@ -58,7 +58,7 @@ public class MessageController {
 
             if (existe) { 
                 if ("ATIVO".equalsIgnoreCase(atividadeValor)) { 
-                    chatbotService.processMessage(numUser, texto);
+                    chatbotService.processMessage(request);
                     return ResponseEntity.ok("Mensagem recebida e usuário ativo"); 
                 } else if ("INATIVO".equalsIgnoreCase(atividadeValor)) { 
                     chatbotService.inactiveUser(numUser); 
