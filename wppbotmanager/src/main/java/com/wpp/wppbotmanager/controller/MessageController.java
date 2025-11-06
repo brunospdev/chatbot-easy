@@ -53,15 +53,9 @@ public class MessageController {
             String telefone = dados[0];
             String atividadeValor = dados[1];
             String papelValor = dados[2];
-            
-
-
-
-            
-            
-            
+  
             boolean existe = telefone != null && telefone.endsWith(numUser);
-            System.out.println(existe);
+
             if (existe) { 
                 if ("ATIVO".equalsIgnoreCase(atividadeValor)) { 
                     chatbotService.processMessage(numUser, texto);
@@ -78,10 +72,8 @@ public class MessageController {
             }
 
 
-            
-
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Erro ao processar usuários: " + e.getMessage());
+            return ResponseEntity.status(500).body("Erro ao processar mensagem: " + e.getMessage());
         }
     }
 }

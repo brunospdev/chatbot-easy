@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ReceiveMessageRequest {
+    private String id;
     private String from;
     private String nome;
     private String status;

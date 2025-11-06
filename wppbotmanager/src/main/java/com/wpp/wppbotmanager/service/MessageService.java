@@ -4,7 +4,6 @@ import com.wpp.wppbotmanager.client.WaApiClient;
 import com.wpp.wppbotmanager.dto.SendMessageRequest;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class MessageService {
 
