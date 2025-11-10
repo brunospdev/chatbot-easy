@@ -5,7 +5,15 @@ public class OmieDTO {
     public static class OmieApiRequest {
         private String appKey;
         private String appSecret;
+        private Integer dias;
 
+        public Integer getDias() {
+            return dias;
+        }
+
+        public void setDias(Integer dias) {
+            this.dias = dias;
+        }
 
         public String getAppKey() {
             return appKey;

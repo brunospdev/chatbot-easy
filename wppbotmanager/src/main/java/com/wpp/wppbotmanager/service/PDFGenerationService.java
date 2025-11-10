@@ -21,16 +21,19 @@ public class PDFGenerationService {
         this.webClient = webClient;
     }
 
-    public byte[] gerarRelatorioFinanceiroPdf(String appKey, String appSecret) throws JRException {
-        RelatorioFinanceiroModel dadosFinanceiros = buscarDadosFinanceiros(appKey, appSecret);
+    // CORRIGIDO: O método agora recebe o DTO OmieApiRequest
+    public byte[] gerarRelatorioFinanceiroPdf(OmieDTO.OmieApiRequest request) throws JRException {
+        RelatorioFinanceiroModel dadosFinanceiros = buscarDadosFinanceiros(request);
 
         InputStream jasperStream = this.getClass().getResourceAsStream("/reports/relatorioestruturado.jasper");
         InputStream imageStream = getClass().getResourceAsStream("/images/logo.png");
+        Integer diasAnalisados = request.getDias();
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("resumoGeral", dadosFinanceiros.getResumoGeral());
         parameters.put("detalhesPorCategoria", dadosFinanceiros.getDetalhesPorCategoria());
         parameters.put("Logo_Imagem", imageStream);
+        parameters.put("DIAS_ANALISADOS", diasAnalisados);
 
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(Collections.singletonList(dadosFinanceiros));
 
@@ -39,12 +42,14 @@ public class PDFGenerationService {
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
 
-    private RelatorioFinanceiroModel buscarDadosFinanceiros(String appKey, String appSecret) {
-        OmieDTO.OmieApiRequest requestBody = new OmieDTO.OmieApiRequest(appKey, appSecret);
-
+    // CORRIGIDO: O método recebe o DTO e o usa para montar a requisição
+    private RelatorioFinanceiroModel buscarDadosFinanceiros(OmieDTO.OmieApiRequest request) {
         return webClient.post()
-                .uri("/omie/relatorio-financeiro")
-                .bodyValue(requestBody)
+                .uri(uriBuilder -> uriBuilder
+                        .path("/omie/relatorio-financeiro")
+                        .queryParam("dias", request.getDias())
+                        .build())
+                .bodyValue(request) // Envia o objeto inteiro no corpo
                 .retrieve()
                 .bodyToMono(RelatorioFinanceiroModel.class)
                 .block();

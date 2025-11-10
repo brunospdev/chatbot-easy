@@ -1,4 +1,5 @@
-package com.wpp.wppbotmanager.controller;// No seu com.wpp.wppbotmanager.controller.PDFExportController.java
+package com.wpp.wppbotmanager.controller;
+
 import com.wpp.wppbotmanager.dto.OmieDTO;
 import com.wpp.wppbotmanager.service.PDFGenerationService;
 import net.sf.jasperreports.engine.JRException;
@@ -16,17 +17,14 @@ public class PDFExportController {
     @Autowired
     private PDFGenerationService pdfService;
 
-    // Vamos usar um POST para receber as credenciais de forma segura
     @PostMapping("/export/relatorio-financeiro")
-    public ResponseEntity<byte[]> exportPdf(@RequestBody OmieDTO.OmieApiRequest credenciais) {
+    public ResponseEntity<byte[]> exportPdf(@RequestBody OmieDTO.OmieApiRequest request) { // Renomeado para 'request' para clareza
         try {
-            // Chama o serviço para gerar o PDF
-            byte[] pdfBytes = pdfService.gerarRelatorioFinanceiroPdf(credenciais.getAppKey(), credenciais.getAppSecret());
+            // CORRIGIDO: Passa o objeto DTO inteiro para o serviço
+            byte[] pdfBytes = pdfService.gerarRelatorioFinanceiroPdf(request);
 
-            // Configura os headers da resposta para indicar que é um PDF
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
-            // A linha abaixo faz o navegador tentar abrir o PDF inline.
             headers.setContentDispositionFormData("inline", "relatorio_financeiro.pdf");
 
             return ResponseEntity.ok()
@@ -34,13 +32,11 @@ public class PDFExportController {
                     .body(pdfBytes);
 
         } catch (JRException e) {
-            // Lidar com erros de geração do Jasper
-            e.printStackTrace(); // Logar o erro
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         } catch (Exception e) {
-            // Lidar com outros erros (ex: API Node.js fora do ar)
-            e.printStackTrace(); // Logar o erro
-            return ResponseEntity.status(502).body(null); // Bad Gateway
+            e.printStackTrace();
+            return ResponseEntity.status(502).body(null);
         }
     }
 }
