@@ -25,10 +25,12 @@ public class PDFGenerationService {
         RelatorioFinanceiroModel dadosFinanceiros = buscarDadosFinanceiros(appKey, appSecret);
 
         InputStream jasperStream = this.getClass().getResourceAsStream("/reports/relatorioestruturado.jasper");
+        InputStream imageStream = getClass().getResourceAsStream("/images/logo.png");
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("resumoGeral", dadosFinanceiros.getResumo_geral());
-        parameters.put("detalhesPorCategoria", dadosFinanceiros.getDetalhes_por_categoria());
+        parameters.put("resumoGeral", dadosFinanceiros.getResumoGeral());
+        parameters.put("detalhesPorCategoria", dadosFinanceiros.getDetalhesPorCategoria());
+        parameters.put("Logo_Imagem", imageStream);
 
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(Collections.singletonList(dadosFinanceiros));
 

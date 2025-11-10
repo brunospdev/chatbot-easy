@@ -1,134 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.21.5-74d586df47b25dbd05bd0957999819196e59934a  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorioestruturado" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9ac98d20-af77-421a-a2c4-e6b14c464263">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="ArquivoJSON_Financeiro"/>
+	<style name="EstiloResultado" forecolor="#0C751C">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$P{resumoGeral}.getResultado_liquido_numerico() < 0]]></conditionExpression>
+			<style forecolor="#AD110E"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="resumoGeral" class="com.wpp.wppbotmanager.dto.ResumoGeral"/>
+	<parameter name="detalhesPorCategoria" class="com.wpp.wppbotmanager.dto.DetalhesPorCategoria"/>
 	<queryString language="jsonql">
-		<![CDATA[detalhes_por_categoria.saidas_nao_operacionais]]>
+		<![CDATA[]]>
 	</queryString>
-	<field name="data_inicio" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['resumo_geral']['periodo_analisado']['data_inicio']]]>
-		</property>
-		<fieldDescription><![CDATA[resumo_geral.periodo_analisado.data_inicio]]></fieldDescription>
-	</field>
-	<field name="data_fim" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['resumo_geral']['periodo_analisado']['data_fim']]]>
-		</property>
-		<fieldDescription><![CDATA[resumo_geral.periodo_analisado.data_fim]]></fieldDescription>
-	</field>
-	<field name="total_dias" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['resumo_geral']['periodo_analisado']['total_dias']]]>
-		</property>
-		<fieldDescription><![CDATA[resumo_geral.periodo_analisado.total_dias]]></fieldDescription>
-	</field>
-	<field name="total_receitas" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['resumo_geral']['total_receitas']]]>
-		</property>
-		<fieldDescription><![CDATA[resumo_geral.total_receitas]]></fieldDescription>
-	</field>
-	<field name="total_despesas_custos" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['resumo_geral']['total_despesas_custos']]]>
-		</property>
-		<fieldDescription><![CDATA[resumo_geral.total_despesas_custos]]></fieldDescription>
-	</field>
-	<field name="resultado_liquido" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['resumo_geral']['resultado_liquido']]]>
-		</property>
-		<fieldDescription><![CDATA[resumo_geral.resultado_liquido]]></fieldDescription>
-	</field>
-	<field name="receitas_operacionais" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['detalhes_por_categoria']['receitas_operacionais']]]>
-		</property>
-		<fieldDescription><![CDATA[detalhes_por_categoria.receitas_operacionais]]></fieldDescription>
-	</field>
-	<field name="custos_variaveis" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['detalhes_por_categoria']['custos_variaveis']]]>
-		</property>
-		<fieldDescription><![CDATA[detalhes_por_categoria.custos_variaveis]]></fieldDescription>
-	</field>
-	<field name="despesas_com_pessoal" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['detalhes_por_categoria']['despesas_com_pessoal']]]>
-		</property>
-		<fieldDescription><![CDATA[detalhes_por_categoria.despesas_com_pessoal]]></fieldDescription>
-	</field>
-	<field name="despesas_administrativas" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['detalhes_por_categoria']['despesas_administrativas']]]>
-		</property>
-		<fieldDescription><![CDATA[detalhes_por_categoria.despesas_administrativas]]></fieldDescription>
-	</field>
-	<field name="pro_labore" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['detalhes_por_categoria']['pro_labore']]]>
-		</property>
-		<fieldDescription><![CDATA[detalhes_por_categoria.pro_labore]]></fieldDescription>
-	</field>
-	<field name="investimentos" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['detalhes_por_categoria']['investimentos']]]>
-		</property>
-		<fieldDescription><![CDATA[detalhes_por_categoria.investimentos]]></fieldDescription>
-	</field>
-	<field name="parcelamentos" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['detalhes_por_categoria']['parcelamentos']]]>
-		</property>
-		<fieldDescription><![CDATA[detalhes_por_categoria.parcelamentos]]></fieldDescription>
-	</field>
-	<field name="entradas_nao_operacionais" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['detalhes_por_categoria']['entradas_nao_operacionais']]]>
-		</property>
-		<fieldDescription><![CDATA[detalhes_por_categoria.entradas_nao_operacionais]]></fieldDescription>
-	</field>
-	<field name="saidas_nao_operacionais" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression">
-			<![CDATA[$['detalhes_por_categoria']['saidas_nao_operacionais']]]>
-		</property>
-		<fieldDescription><![CDATA[detalhes_por_categoria.saidas_nao_operacionais]]></fieldDescription>
-	</field>
-	<variable name="v_total_receitas_num" class="java.math.BigDecimal">
-		<variableExpression><![CDATA[($F{total_receitas} == null || $F{total_receitas}.trim().isEmpty()) ? java.math.BigDecimal.ZERO : new java.math.BigDecimal($F{total_receitas}.replace("R$","").replaceAll("\\s","").replace(".","").replace(",",".").trim())]]></variableExpression>
+	<!-- Variáveis de KPI (Indicadores) -->
+	<variable name="v_margem_lucro_liquido" class="java.lang.Double">
+		<variableExpression><![CDATA[$P{resumoGeral}.getTotal_receitas_numerico() == 0 ? 0.0 : $P{resumoGeral}.getResultado_liquido_numerico() / $P{resumoGeral}.getTotal_receitas_numerico()]]></variableExpression>
 	</variable>
-	<variable name="v_resultado_liquido_num" class="java.math.BigDecimal">
-		<variableExpression><![CDATA[($F{resultado_liquido} == null || $F{resultado_liquido}.trim().isEmpty()) ?
-        java.math.BigDecimal.ZERO :
-        new java.math.BigDecimal(
-            $F{resultado_liquido}.replace("R$","")      // Remove R$
-                             .replaceAll("\\s", "")   // Remove ALL whitespace
-                             .replace(".","")          // Remove thousand separator
-                             .replace(",",".")          // Replace decimal comma with dot
-                             .trim()                   // Trim just in case
-        )]]></variableExpression>
+	<variable name="v_custos_variaveis_num" class="java.lang.Double">
+		<variableExpression><![CDATA[$P{detalhesPorCategoria}.getCustos_variaveis_numerico()]]></variableExpression>
 	</variable>
-	<variable name="v_custos_variaveis_num" class="java.math.BigDecimal">
-		<variableExpression><![CDATA[($F{custos_variaveis} == null || $F{custos_variaveis}.trim().isEmpty()) ? java.math.BigDecimal.ZERO : new java.math.BigDecimal($F{custos_variaveis}.replace("R$","").replaceAll("\\s","").replace(".","").replace(",",".").trim())]]></variableExpression>
+	<variable name="v_margem_contribuicao" class="java.lang.Double">
+		<variableExpression><![CDATA[$P{resumoGeral}.getTotal_receitas_numerico() == 0 ? 0.0 : ($P{resumoGeral}.getTotal_receitas_numerico() - $V{v_custos_variaveis_num}) / $P{resumoGeral}.getTotal_receitas_numerico()]]></variableExpression>
 	</variable>
-	<variable name="v_total_despesas_custos_num" class="java.math.BigDecimal">
-		<variableExpression><![CDATA[($F{total_despesas_custos} == null || $F{total_despesas_custos}.trim().isEmpty()) ? java.math.BigDecimal.ZERO : new java.math.BigDecimal($F{total_despesas_custos}.replace("R$","").replaceAll("\\s","").replace(".","").replace(",",".").trim())]]></variableExpression>
-	</variable>
-	<variable name="v_margem_lucro_liquido" class="java.math.BigDecimal">
-		<variableExpression><![CDATA[$V{v_total_receitas_num}.compareTo(java.math.BigDecimal.ZERO) == 0 ? 
-    java.math.BigDecimal.ZERO : 
-    $V{v_resultado_liquido_num}.divide($V{v_total_receitas_num}, 4, java.math.RoundingMode.HALF_UP).multiply(new java.math.BigDecimal("100"))]]></variableExpression>
-	</variable>
-	<variable name="v_margem_contribuicao" class="java.math.BigDecimal">
-		<variableExpression><![CDATA[$V{v_total_receitas_num}.compareTo(java.math.BigDecimal.ZERO) == 0 ? 
-    java.math.BigDecimal.ZERO : 
-    ($V{v_total_receitas_num}.subtract($V{v_custos_variaveis_num})).divide($V{v_total_receitas_num}, 4, java.math.RoundingMode.HALF_UP).multiply(new java.math.BigDecimal("100"))]]></variableExpression>
-	</variable>
-	<variable name="v_taxa_despesas" class="java.math.BigDecimal">
-		<variableExpression><![CDATA[$V{v_total_receitas_num}.compareTo(java.math.BigDecimal.ZERO) == 0 ? 
-    java.math.BigDecimal.ZERO : 
-    $V{v_total_despesas_custos_num}.divide($V{v_total_receitas_num}, 4, java.math.RoundingMode.HALF_UP).multiply(new java.math.BigDecimal("100"))]]></variableExpression>
+	<variable name="v_taxa_despesas" class="java.lang.Double">
+		<variableExpression><![CDATA[$P{resumoGeral}.getTotal_receitas_numerico() == 0 ? 0.0 : $P{resumoGeral}.getTotal_despesas_custos_numerico() / $P{resumoGeral}.getTotal_receitas_numerico()]]></variableExpression>
 	</variable>
 	<background>
 		<band splitType="Stretch"/>
@@ -150,22 +46,22 @@
 				<text><![CDATA[Período:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="60" y="20" width="176" height="20" forecolor="#808080" uuid="8c0fdc91-8417-4e3b-b266-0e3d04d7b25a"/>
+				<reportElement x="60" y="20" width="259" height="20" forecolor="#808080" uuid="8c0fdc91-8417-4e3b-b266-0e3d04d7b25a"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA[($F{data_inicio} + " a " + $F{data_fim})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{resumoGeral}.getPeriodoAnalisado().getData_inicio() + " a " + $P{resumoGeral}.getPeriodoAnalisado().getData_fim()]]></textFieldExpression>
 			</textField>
 			<image>
 				<reportElement x="740" y="-30" width="82" height="80" uuid="7aa95e7f-f83a-4ebe-98cc-9d37c7808abf"/>
-				<imageExpression><![CDATA["/wppbotmanager/src/main/resources/logo.png"]]></imageExpression>
+				<imageExpression><![CDATA["logo.png"]]></imageExpression>
 			</image>
 			<textField>
-				<reportElement x="236" y="20" width="170" height="20" forecolor="#808080" uuid="33797790-8f0b-4741-8b58-17ef2e2bdb22"/>
+				<reportElement x="319" y="20" width="170" height="20" forecolor="#808080" uuid="33797790-8f0b-4741-8b58-17ef2e2bdb22"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA[("("+($F{total_dias})+ " dias)")]]></textFieldExpression>
+				<textFieldExpression><![CDATA["(" + $P{resumoGeral}.getPeriodoAnalisado().getTotal_dias() + " dias)"]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
@@ -206,21 +102,21 @@
 				<textElement textAlignment="Center">
 					<font size="24" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{total_receitas}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{resumoGeral}.getTotal_receitas()]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="271" y="75" width="260" height="40" forecolor="#AD110E" uuid="2dfcc247-4161-417a-b0f5-d7950e8de72c"/>
 				<textElement textAlignment="Center">
 					<font size="24" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{total_despesas_custos}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{resumoGeral}.getTotal_despesas_custos()]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="571" y="75" width="220" height="40" uuid="c2cba078-6198-42a9-bc60-ca3ab857f593"/>
+				<reportElement style="EstiloResultado" x="571" y="75" width="220" height="40" uuid="c2cba078-6198-42a9-bc60-ca3ab857f593"/>
 				<textElement textAlignment="Center">
 					<font size="24" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{resultado_liquido}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{resumoGeral}.getResultado_liquido()]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -286,63 +182,63 @@
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{receitas_operacionais}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{detalhesPorCategoria}.getReceitas_operacionais()]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="515" y="70" width="164" height="18" uuid="8cb302d5-c475-4d95-84f2-fd221cc92fb4"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{custos_variaveis}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{detalhesPorCategoria}.getCustos_variaveis()]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="515" y="88" width="164" height="18" uuid="35d9aad9-2010-4af2-9001-45bff1ddbb81"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{despesas_com_pessoal}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{detalhesPorCategoria}.getDespesas_com_pessoal()]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="515" y="106" width="164" height="18" uuid="8ec4b983-6acd-40a4-9d09-da38c1134feb"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{despesas_administrativas}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{detalhesPorCategoria}.getDespesas_administrativas()]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="515" y="122" width="164" height="18" uuid="6cca15df-3d5d-42db-a44d-3679983a5fe6"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{pro_labore}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{detalhesPorCategoria}.getPro_labore()]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="515" y="139" width="164" height="20" uuid="06d212f7-4934-457a-a653-a7f7776b89e7"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{investimentos}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{detalhesPorCategoria}.getInvestimentos()]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="515" y="159" width="164" height="17" uuid="ca35d739-659d-4e37-8095-d8c5111d206f"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{parcelamentos}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{detalhesPorCategoria}.getParcelamentos()]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="515" y="176" width="164" height="18" uuid="dd84f801-f630-4b4a-b5b4-a57659426dab"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{entradas_nao_operacionais}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{detalhesPorCategoria}.getEntradas_nao_operacionais()]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="515" y="196" width="164" height="19" uuid="471fbdc0-48d7-45bf-9c10-821251bc06cf"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{saidas_nao_operacionais}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{detalhesPorCategoria}.getSaidas_nao_operacionais()]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnHeader>
@@ -373,21 +269,21 @@ Taxa de Despesas sobre Receitas ]]></text>
 			<line>
 				<reportElement x="231" y="52" width="347" height="1" uuid="385601c9-caa9-4f64-83f6-ff519e742f9e"/>
 			</line>
-			<textField pattern="#,##0.00&apos;%&apos;">
+			<textField pattern="#,##0.00%">
 				<reportElement x="515" y="35" width="62" height="18" uuid="b2c3d4e5-f6a7-8901-2345-67890abcdef1"/>
 				<textElement textAlignment="Right">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{v_margem_contribuicao}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00&apos;%&apos;">
+			<textField pattern="#,##0.00%">
 				<reportElement x="515" y="17" width="62" height="18" uuid="a1b2c3d4-e5f6-7890-1234-567890abcdef"/>
 				<textElement textAlignment="Right">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{v_margem_lucro_liquido}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00&apos;%&apos;">
+			<textField pattern="#,##0.00%">
 				<reportElement x="515" y="53" width="62" height="18" uuid="c3d4e5f6-a7b8-9012-3456-7890abcdef12"/>
 				<textElement textAlignment="Right">
 					<font size="12"/>

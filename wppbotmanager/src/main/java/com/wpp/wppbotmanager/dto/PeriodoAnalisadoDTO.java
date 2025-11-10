@@ -8,13 +8,13 @@ import lombok.Setter;
 @Setter
 public class PeriodoAnalisadoDTO {
 
-    @JsonProperty("dataInicio")
+    @JsonProperty("data_inicio")
     private String data_inicio;
 
-    @JsonProperty("dataFim")
+    @JsonProperty("data_fim")
     private String data_fim;
 
-    @JsonProperty("dataDias")
+    @JsonProperty("total_dias")
     private Integer total_dias;
 
 }

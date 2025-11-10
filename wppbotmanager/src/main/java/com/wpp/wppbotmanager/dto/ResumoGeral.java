@@ -9,7 +9,7 @@ import lombok.Setter;
 public class ResumoGeral {
 
     @JsonProperty("periodo_analisado")
-    private PeriodoAnalisadoDTO periodo_analisado;
+    private PeriodoAnalisadoDTO periodoAnalisado;
 
     private String total_receitas;
     private String total_despesas_custos;

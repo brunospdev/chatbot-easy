@@ -1,27 +1,19 @@
 package com.wpp.wppbotmanager.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wpp.wppbotmanager.dto.DetalhesPorCategoria;
 import com.wpp.wppbotmanager.dto.ResumoGeral;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class RelatorioFinanceiroModel {
 
-    private ResumoGeral resumo_geral;
+    @JsonProperty("resumo_geral")
+    private ResumoGeral resumoGeral;
 
-    private DetalhesPorCategoria detalhes_por_categoria;
+    @JsonProperty("detalhes_por_categoria")
+    private DetalhesPorCategoria detalhesPorCategoria;
 
-    public ResumoGeral getResumo_geral() {
-        return resumo_geral;
-    }
-
-    public void setResumo_geral(ResumoGeral resumo_geral) {
-        this.resumo_geral = resumo_geral;
-    }
-
-    public DetalhesPorCategoria getDetalhes_por_categoria() {
-        return detalhes_por_categoria;
-    }
-
-    public void setDetalhes_por_categoria(DetalhesPorCategoria detalhes_por_categoria) {
-        this.detalhes_por_categoria = detalhes_por_categoria;
-    }
 }
