@@ -49,10 +49,28 @@ const getUsuarioById = async (req: Request, res: Response) => {
     return res.status(status).json(message)
 }
 
+const getUsuariosByEmp = async (req: Request, res: Response) => {
+  try {
+    const { id_empresa } = req.params;
+    const nIdEmpresa = Number(id_empresa);
+    const { type, message, status } = await userService.getUsuariosByEmp(nIdEmpresa);
+if (type) {
+  return res.status(status).json({ message });
+}
+return res.status(status).json({ data: message });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro interno no servidor' });
+  }
+};
+
+
 export default {
     criarUsuario,
     listarUsuarios,
     updateUsuario,
     deleteUsuario,
-    getUsuarioById
+    getUsuarioById,
+    getUsuariosByEmp
 }
