@@ -2,31 +2,27 @@ package com.wpp.wppbotmanager.controller;
 
 import com.wpp.wppbotmanager.service.ChatbotService;
 import com.wpp.wppbotmanager.service.MessageService;
-import com.wpp.wppbotmanager.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.wpp.wppbotmanager.dto.ReceiveMessageRequest;
 import com.wpp.wppbotmanager.dto.SendMessageRequest;
-import com.wpp.wppbotmanager.dto.UserDto;
+import com.wpp.wppbotmanager.dto.ReceiveReportRequest;
 
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.fasterxml.jackson.core.type.TypeReference;
-import java.util.List;
-import java.util.ArrayList;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/wpp/messages")
 public class MessageController {
 
     private final MessageService messageService;
-    private final UserService userService;
     private final ChatbotService chatbotService;
 
-    public MessageController(MessageService messageService, ChatbotService chatbotService, UserService userService) {
+    public MessageController(MessageService messageService, ChatbotService chatbotService) {
         this.messageService = messageService;
         this.chatbotService = chatbotService;
-        this.userService = userService;
     }
 
     @GetMapping
@@ -42,38 +38,88 @@ public class MessageController {
     @PostMapping("/receber/msg")
     public ResponseEntity<?> receiveMessage(@RequestBody ReceiveMessageRequest request) {
         String numUser = request.getFrom();
-        String atividade = request.getStatus();
-        String texto = request.getTexto();
-        String papel = request.getPapel();
-
+        
         try {
-            List<String> userList = new ArrayList<>();
-            userList.add(numUser+","+atividade+","+papel);
-            String[] dados = userList.get(0).split(",");
-
-            String telefone = dados[0];
-            String atividadeValor = dados[1];
-            String papelValor = dados[2];
-  
-            boolean existe = telefone != null && telefone.endsWith(numUser);
-
-            if (existe) { 
-                if ("ATIVO".equalsIgnoreCase(atividadeValor)) { 
-                    chatbotService.processMessage(request);
-                    return ResponseEntity.ok("Mensagem recebida e usuário ativo"); 
-                } else if ("INATIVO".equalsIgnoreCase(atividadeValor)) { 
-                    chatbotService.inactiveUser(numUser); 
-                    return ResponseEntity.ok("Mensagem recebida e usuário inativo"); 
-                } else { 
-                    chatbotService.unknownUser(numUser); 
-                    return ResponseEntity.ok("Mensagem recebida e status de atividade desconhecido"); 
-                } 
-            } else { 
-                return ResponseEntity.status(404).body("Usuário não encontrado no banco"); 
+            System.out.println("[DEBUG] Incoming message from: " + numUser);
+            
+            // Try to fetch user from Node by phone number
+            String userUrl = "http://localhost:3001/users/telefone/" + numUser;
+            RestTemplate restTemplate = new RestTemplate();
+            String userJson = null;
+            
+            try {
+                userJson = restTemplate.getForObject(userUrl, String.class);
+                System.out.println("[DEBUG] User fetched from Node: " + userJson);
+            } catch (Exception e) {
+                System.out.println("[DEBUG] Error fetching user from Node: " + e.getMessage());
+                userJson = null;
+            }
+            
+            // If user found in DB, extract data and enrich the request
+            if (userJson != null && !userJson.isBlank()) {
+                System.out.println("[DEBUG] Raw user JSON from Node: " + userJson);
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode userNode = mapper.readTree(userJson);
+                
+                System.out.println("[DEBUG] Parsed JSON node: " + userNode.toPrettyString());
+                
+                // Handle possible envelope { message: {...} }
+                if (userNode.has("message")) {
+                    System.out.println("[DEBUG] Found 'message' envelope, unwrapping...");
+                    userNode = userNode.get("message");
+                }
+                
+                String idEmpresa = userNode.path("id_empresa").asText(null);
+                // Handle numeric atividade field (0 = inativo, 1 = ativo, etc)
+                JsonNode atividadeNode = userNode.path("atividade");
+                String atividade = "ativo";  // default
+                if (!atividadeNode.isMissingNode()) {
+                    if (atividadeNode.isNumber()) {
+                        int atividadeNum = atividadeNode.asInt(-1);
+                        atividade = (atividadeNum == 1 || atividadeNum == 0) ? 
+                            (atividadeNum == 1 ? "ativo" : "inativo") : "ativo";
+                    } else {
+                        atividade = atividadeNode.asText("ativo").toLowerCase();
+                    }
+                }
+                String papel = userNode.path("papel").asText("user");
+                String nome = userNode.path("nome").asText(null);
+                
+                System.out.println("[DEBUG] *** USER DATA EXTRACTED ***");
+                System.out.println("[DEBUG] id_empresa: " + idEmpresa);
+                System.out.println("[DEBUG] atividade (raw): " + atividadeNode);
+                System.out.println("[DEBUG] atividade (parsed): " + atividade);
+                System.out.println("[DEBUG] papel: " + papel);
+                System.out.println("[DEBUG] nome: " + nome);
+                
+                // Enrich incoming request with DB values
+                request.setId_empresa(idEmpresa);
+                request.setStatus(atividade);
+                request.setPapel(papel);
+                request.setNome(nome);
+                
+                // Process the message
+                if ("ativo".equalsIgnoreCase(atividade)) {
+                    ReceiveReportRequest reportRequest = new ReceiveReportRequest();
+                    reportRequest.setIdEmpresa(idEmpresa);
+                    chatbotService.processMessage(request, reportRequest);
+                    return ResponseEntity.ok("Mensagem recebida e usuário ativo");
+                } else if ("inativo".equalsIgnoreCase(atividade)) {
+                    chatbotService.inactiveUser(numUser);
+                    return ResponseEntity.ok("Mensagem recebida e usuário inativo");
+                } else {
+                    return ResponseEntity.ok("Mensagem recebida e status de atividade desconhecido");
+                }
+            } else {
+                // User not found in DB
+                System.out.println("[DEBUG] User not found in database for number: " + numUser);
+                chatbotService.unknownUser(numUser);
+                return ResponseEntity.ok("Usuário não encontrado no banco");
             }
 
-
         } catch (Exception e) {
+            System.err.println("[ERROR] Exception in receiveMessage: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(500).body("Erro ao processar mensagem: " + e.getMessage());
         }
     }

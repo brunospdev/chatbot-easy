@@ -96,11 +96,28 @@ const updateUsuario = async (id: number, usuario: Partial<Omit<Usuario, 'papel'>
 
 }
 
+const getUsuarioByTelefone = async (telefone: string) => {
+    const usuario = await userModel.getUsuarioByNumber(telefone);
+    if (!usuario) {
+        return {
+            type: 'error',
+            message: 'Usuário não encontrado',
+            status: 404
+        }
+    }
+    return {
+        type: null,
+        message: usuario,
+        status: 200
+    }
+}
+
 export default {
     getAllUser,
     getUserById,
     createUsuario,
     deleteUsuario,
     updateUsuario,
-    getUsuariosByEmp
+    getUsuariosByEmp,
+    getUsuarioByTelefone
 }

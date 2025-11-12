@@ -16,5 +16,5 @@ public class ReceiveMessageRequest {
     private String papel;
     private String data;
     private String hora;
+    private String id_empresa;
 }
-
