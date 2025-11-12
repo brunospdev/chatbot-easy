@@ -4,12 +4,14 @@ export interface Empresa {
   nome: string
   celular?: string | null
   id_empresa: number
+  app_key: string
+  app_secret: string
 }
 
-const createEmpresa = async ({ nome, celular, id_empresa }: Empresa) => {
+const createEmpresa = async ({ nome, celular, id_empresa, app_key, app_secret }: Empresa) => {
   const [{ insertId }]: any = await connection.execute(
-    `INSERT INTO Empresa (nome, celular, id_empresa) VALUES (?, ?, ?)`,
-    [nome, celular ?? null, id_empresa]
+    `INSERT INTO Empresa (nome, celular, id_empresa, app_key, app_secret) VALUES (?, ?, ?, ?, ?)`,
+    [nome, celular ?? null, id_empresa, app_key, app_secret]
   );
   return insertId;
 };

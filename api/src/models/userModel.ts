@@ -97,4 +97,5 @@ export default {
   deleteUsuario,
   getUsuarioByNumber,
   getRoleByNumber,
+  getUsuariosByEmp
 }

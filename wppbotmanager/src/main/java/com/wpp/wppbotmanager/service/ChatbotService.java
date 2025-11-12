@@ -106,6 +106,10 @@ public class ChatbotService {
                 } else {
                     proximoEstado = MAPA_MENU_PRINCIPAL.getOrDefault(textInput, UserStateManagerService.MENU_PRINCIPAL);
                 }
+                if("2".equals(textInput)){
+                    proximoEstado = "SUBMENU_RELATORIO";
+                    
+                }
                 break;
             case "SUBMENU_RESUMO":
                 proximoEstado = MAPA_MENU_RESUMO.getOrDefault(textInput, "ESTADO_INVALIDO");

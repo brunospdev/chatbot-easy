@@ -8,6 +8,7 @@ import com.wpp.wppbotmanager.dto.ReceiveMessageRequest;
 import com.wpp.wppbotmanager.dto.SendMessageRequest;
 import com.wpp.wppbotmanager.dto.UserDto;
 
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -76,4 +77,5 @@ public class MessageController {
             return ResponseEntity.status(500).body("Erro ao processar mensagem: " + e.getMessage());
         }
     }
+    
 }
