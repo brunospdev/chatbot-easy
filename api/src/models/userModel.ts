@@ -95,10 +95,6 @@ export default {
   getUsuarioById,
   updateUsuario,
   deleteUsuario,
-<<<<<<< HEAD
   getUsuarioByNumber,
   getRoleByNumber,
-=======
-  getUsuariosByEmp,
->>>>>>> main
 }
