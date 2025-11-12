@@ -41,8 +41,6 @@ public class MessageController {
         
         try {
             System.out.println("[DEBUG] Incoming message from: " + numUser);
-            
-            // Try to fetch user from Node by phone number
             String userUrl = "http://localhost:3001/users/telefone/" + numUser;
             RestTemplate restTemplate = new RestTemplate();
             String userJson = null;
@@ -54,23 +52,19 @@ public class MessageController {
                 System.out.println("[DEBUG] Error fetching user from Node: " + e.getMessage());
                 userJson = null;
             }
-            
-            // If user found in DB, extract data and enrich the request
             if (userJson != null && !userJson.isBlank()) {
                 System.out.println("[DEBUG] Raw user JSON from Node: " + userJson);
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode userNode = mapper.readTree(userJson);
                 
                 System.out.println("[DEBUG] Parsed JSON node: " + userNode.toPrettyString());
-                
-                // Handle possible envelope { message: {...} }
+
                 if (userNode.has("message")) {
                     System.out.println("[DEBUG] Found 'message' envelope, unwrapping...");
                     userNode = userNode.get("message");
                 }
                 
                 String idEmpresa = userNode.path("id_empresa").asText(null);
-                // Handle numeric atividade field (0 = inativo, 1 = ativo, etc)
                 JsonNode atividadeNode = userNode.path("atividade");
                 String atividade = "ativo";  // default
                 if (!atividadeNode.isMissingNode()) {
@@ -91,14 +85,12 @@ public class MessageController {
                 System.out.println("[DEBUG] atividade (parsed): " + atividade);
                 System.out.println("[DEBUG] papel: " + papel);
                 System.out.println("[DEBUG] nome: " + nome);
-                
-                // Enrich incoming request with DB values
+
                 request.setId_empresa(idEmpresa);
                 request.setStatus(atividade);
                 request.setPapel(papel);
                 request.setNome(nome);
-                
-                // Process the message
+
                 if ("ativo".equalsIgnoreCase(atividade)) {
                     ReceiveReportRequest reportRequest = new ReceiveReportRequest();
                     reportRequest.setIdEmpresa(idEmpresa);
@@ -111,7 +103,6 @@ public class MessageController {
                     return ResponseEntity.ok("Mensagem recebida e status de atividade desconhecido");
                 }
             } else {
-                // User not found in DB
                 System.out.println("[DEBUG] User not found in database for number: " + numUser);
                 chatbotService.unknownUser(numUser);
                 return ResponseEntity.ok("Usuário não encontrado no banco");
