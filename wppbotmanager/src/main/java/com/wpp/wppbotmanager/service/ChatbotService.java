@@ -45,6 +45,7 @@ public class ChatbotService {
                     "1. 7 dias\n" +
                     "2. 15 dias\n" +
                     "3. 30 dias\n" +
+                    "4. Período Personalizado\n" +
                     "0. Voltar";
 
     private static final String TEXTO_MENU_RELATORIO =
@@ -70,6 +71,7 @@ public class ChatbotService {
             "1", "7_DIAS_RESUMO",
             "2", "15_DIAS_RESUMO",
             "3", "30_DIAS_RESUMO",
+            "4", "Periodo Personalizado",
             "0", UserStateManagerService.MENU_PRINCIPAL
     );
 
@@ -226,8 +228,10 @@ public class ChatbotService {
                     case "1" -> 7;
                     case "2" -> 15;
                     case "3" -> 30;
+                    case "4" -> -1;
                     default -> 0;
                 };
+
 
                 if (diasResumo > 0) {
                     messageService.sendMessage(numUser, "Gerando resumo de " + diasResumo + " dias...");
@@ -236,6 +240,20 @@ public class ChatbotService {
                 } else if ("0".equals(textInput)) {
                     proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
                     resposta = TEXTO_MENU_PRINCIPAL;
+                }else if (diasResumo == -1) {
+                    messageService.sendMessage(numUser, "Por favor, envie o número personalizado de dias");
+                    try {
+                        diasResumo = Integer.parseInt(textInput);
+                        messageService.sendMessage(numUser, "Gerando resumo de " + diasResumo + " dias...");
+                        enviarRelatorio(numUser, diasResumo, reportRequest);
+                        resposta = "";
+
+                    } catch (NumberFormatException e) {
+                        messageService.sendMessage(numUser, "Valor inválido. Envie apenas números.");
+                        proximoEstado = "SUBMENU_RESUMO";
+                        messageService.sendMessage(numUser, proximoEstado);
+                        return;
+                    }
                 } else {
                     resposta = "Opção inválida!\n" + TEXTO_MENU_RESUMO;
                 }
