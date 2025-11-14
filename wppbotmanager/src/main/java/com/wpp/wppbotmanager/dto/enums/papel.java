@@ -1,4 +1,4 @@
-package com.wpp.wppbotmanager.dto;
+package com.wpp.wppbotmanager.dto.enums;
 
 public class papel {
     public enum Papel{

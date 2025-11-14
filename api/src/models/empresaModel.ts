@@ -4,12 +4,14 @@ export interface Empresa {
   nome: string
   celular?: string | null
   id_empresa: number
+  app_key: string
+  app_secret: string
 }
 
-const createEmpresa = async ({ nome, celular, id_empresa }: Empresa) => {
+const createEmpresa = async ({ nome, celular, id_empresa, app_key, app_secret }: Empresa) => {
   const [{ insertId }]: any = await connection.execute(
-    `INSERT INTO Empresa (nome, celular, id_empresa) VALUES (?, ?, ?)`,
-    [nome, celular ?? null, id_empresa]
+    `INSERT INTO Empresa (nome, celular, id_empresa, app_key, app_secret) VALUES (?, ?, ?, ?, ?)`,
+    [nome, celular ?? null, id_empresa, app_key, app_secret]
   );
   return insertId;
 };
@@ -21,7 +23,7 @@ const getAllEmpresas = async () => {
 
 const getEmpresaById = async (id: number) => {
   const [[result]]: any = await connection.execute(
-    'SELECT * FROM Empresa WHERE id = ?',
+    'SELECT * FROM Empresa WHERE id_empresa = ?',
     [id]
   )
   return result
@@ -53,7 +55,7 @@ const updateEmpresa = async (id: number, empresa: Partial<Empresa>) => {
     throw new Error('Nenhum campo válido para atualização.')
   }
 
-  const query = `UPDATE Empresa SET ${setClauses.join(', ')} WHERE id = ?`
+  const query = `UPDATE Empresa SET ${setClauses.join(', ')} WHERE id_empresa = ?`
   values.push(id)
 
   const [{ affectedRows }]: any = await connection.execute(query, values)
@@ -62,7 +64,7 @@ const updateEmpresa = async (id: number, empresa: Partial<Empresa>) => {
 
 const deleteEmpresa = async (id: number) => {
   const [{ affectedRows }]: any = await connection.execute(
-    'DELETE FROM Empresa WHERE id = ?',
+    'DELETE FROM Empresa WHERE id_empresa = ?',
     [id]
   )
   return affectedRows

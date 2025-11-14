@@ -10,6 +10,7 @@ import qrcode from "qrcode-terminal";
 import { Boom } from "@hapi/boom";
 import { addMensagem } from "../models/messageModel";
 import moment from "moment-timezone";
+import Usuario from "../models/userModel"
 
 let globalSock: ReturnType<typeof makeWASocket> | null = null;
 
@@ -48,6 +49,9 @@ export async function connectToWhatsApp() {
     const msg = messages[0];
     if (!msg.message || msg.key.fromMe) return;
 
+    if (msg.key.remoteJid?.endsWith("@g.us")) return;
+    if (msg.key.remoteJid?.endsWith("@newsletter")) return;
+
     let textoMensagem = "";
     if (msg.message.conversation) {
       textoMensagem = msg.message.conversation;
@@ -65,11 +69,13 @@ export async function connectToWhatsApp() {
     const senderNumber = sender?.replace(/@s\.whatsapp\.net$/, "") || "";
 
     const zona = "America/Sao_Paulo";
-
+    const usuario = await Usuario.getUsuarioByNumber(senderNumber);
     addMensagem({
       id: msg.key.id,
       from: senderNumber,
       nome: msg.pushName || "Desconhecido",
+      status: usuario?.atividade || "Desconhecido",
+      papel: usuario?.papel || "Desconhecido",
       texto: textoMensagem || "",
       data : moment().tz(zona).format("DD-MM-YYYY"),
       hora : moment().tz(zona).format("HH:mm")

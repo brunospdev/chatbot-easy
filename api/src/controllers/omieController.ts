@@ -88,12 +88,44 @@ export async function gerarRelatorioFinanceiroGeralController(req: Request, res:
             const descricaoChave = MAPA_DESCRICOES_RESPOSTA[codigo] || codigo;
             detalhesFormatados[descricaoChave] = formatadorReais.format(valor);
 
-            if (ehReceita(codigo)) {
-                totalReceitas += valor;
-            } else if (ehDespesaOuCusto(codigo)) {
-                totalDespesasCustos += valor;
+                detalhesFormatados[chaveSimples] = valorFormatado.replace(/\u00A0/g, ' ');
+
+                if (ehReceita(codigo)) {
+                    totalReceitas += valor;
+                } else if (ehDespesaOuCusto(codigo)) {
+                    totalDespesasCustos += valor;
+                }
             }
         }
+
+        const resultadoLiquido = totalReceitas - totalDespesasCustos;
+
+        const dataFim = new Date();
+        const dataInicio = new Date();
+        dataInicio.setDate(dataFim.getDate() - dias);
+
+        const respostaFinal = {
+            resumo_geral: {
+                periodo_analisado: {
+                    data_inicio: dataInicio.toISOString().split('T')[0],
+                    data_fim: dataFim.toISOString().split('T')[0],
+                    total_dias: dias
+                },
+                total_receitas: formatadorReais.format(totalReceitas).replace(/\u00A0/g, ' '),
+                total_despesas_custos: formatadorReais.format(totalDespesasCustos).replace(/\u00A0/g, ' '),
+                resultado_liquido: formatadorReais.format(resultadoLiquido).replace(/\u00A0/g, ' ')
+            },
+            detalhes_por_categoria: detalhesFormatados
+        };
+
+        return res.json(respostaFinal);
+
+    } catch (err: any) {
+        console.error("ERRO AO GERAR RELATÓRIO GERAL:", err.response?.data || err.message || err);
+        return res.status(500).json({
+            error: 'Falha ao processar a solicitação.',
+            details: err.response?.data?.faultstring || err.response?.data?.error || err.message || 'Erro desconhecido'
+        });
     }
 
     const resultadoLiquido = totalReceitas - totalDespesasCustos;

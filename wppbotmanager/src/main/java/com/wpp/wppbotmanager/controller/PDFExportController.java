@@ -1,34 +1,42 @@
 package com.wpp.wppbotmanager.controller;
 
-import com.wpp.wppbotmanager.service.PDFGeneratorService;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.web.bind.annotation.GetMapping;
+import com.wpp.wppbotmanager.dto.OmieDTO;
+import com.wpp.wppbotmanager.service.PDFGenerationService;
+import net.sf.jasperreports.engine.JRException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @RestController
 public class PDFExportController {
 
-    private final PDFGeneratorService pdfGeneratorService;
+    @Autowired
+    private PDFGenerationService pdfService;
 
-    public PDFExportController(PDFGeneratorService pdfGeneratorService) {
-        this.pdfGeneratorService = pdfGeneratorService;
-    }
+    @PostMapping("/export/relatorio-financeiro")
+    public ResponseEntity<byte[]> exportPdf(@RequestBody OmieDTO.OmieApiRequest request) { // Renomeado para 'request' para clareza
+        try {
+            // CORRIGIDO: Passa o objeto DTO inteiro para o serviço
+            byte[] pdfBytes = pdfService.gerarRelatorioFinanceiroPdf(request);
 
-    @GetMapping("/pdf/gerador")
-    public void geradorPDF(HttpServletResponse response) throws IOException {
-        response.setContentType("application/pdf");
-        DateFormat formatoData = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        String dataAtual = formatoData.format(new Date());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("inline", "relatorio_financeiro.pdf");
 
-        String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=pdf_" + dataAtual + ".pdf";
-        response.setHeader(headerKey, headerValue);
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(pdfBytes);
 
-        this.pdfGeneratorService.export(response);
+        } catch (JRException e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(502).body(null);
+        }
     }
 }

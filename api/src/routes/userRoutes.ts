@@ -7,6 +7,8 @@ router.get("/luser", userController.listarUsuarios);
 router.put("/uuser/:id", userController.updateUsuario);
 router.delete("/duser/:id", userController.deleteUsuario);
 router.get("/guser/:id", userController.getUsuarioById);
+router.get("/euser/:id_empresa", userController.getUsuariosByEmp);
+router.get("/telefone/:telefone", userController.getUsuarioByTelefone);
 
 
 export default router;

@@ -32,6 +32,7 @@ CREATE TABLE `Usuario` (
     `nome` VARCHAR(100) NOT NULL,
     `telefone` VARCHAR(20) DEFAULT NULL,
     `papel` ENUM('administrador','funcionario') NOT NULL,
+    `atividade` ENUM('ativo','inativo') NOT NULL,
     `id_empresa` INTEGER NOT NULL,
     `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
