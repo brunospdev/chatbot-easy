@@ -36,29 +36,29 @@ public class ChatbotService {
 
     private static final String TEXTO_MENU_PRINCIPAL =
             "Olá, bem-vindo ao atendimento do Chatbot Easy!\nEscolha uma opção: \n" +
-            "1. Resumo\n" +
-            "2. Relatório\n" +
-            "3. Gestão de Usuários";
+                    "1. Resumo\n" +
+                    "2. Relatório\n" +
+                    "3. Gestão de Usuários";
 
     private static final String TEXTO_MENU_RESUMO =
             "Escolha um intervalo:\n" +
-            "1. 7 dias\n" +
-            "2. 15 dias\n" +
-            "3. 30 dias\n" +
-            "0. Voltar";
+                    "1. 7 dias\n" +
+                    "2. 15 dias\n" +
+                    "3. 30 dias\n" +
+                    "0. Voltar";
 
     private static final String TEXTO_MENU_RELATORIO =
             "Escolha um intervalo:\n" +
-            "1. 7 dias\n" +
-            "2. 15 dias\n" +
-            "3. 30 dias\n" +
-            "0. Voltar";
+                    "1. 7 dias\n" +
+                    "2. 15 dias\n" +
+                    "3. 30 dias\n" +
+                    "0. Voltar";
 
     private static final String TEXTO_MENU_GESTAO_USUARIOS =
             "1. Cadastrar usuários\n" +
-            "2. Listar usuários\n" +
-            "3. Deletar usuários\n" +
-            "0. Voltar";
+                    "2. Listar usuários\n" +
+                    "3. Deletar usuários\n" +
+                    "0. Voltar";
 
     private static final Map<String, String> MAPA_MENU_PRINCIPAL = Map.of(
             "1", "SUBMENU_RESUMO",
@@ -93,111 +93,103 @@ public class ChatbotService {
         try {
             RestTemplate restTemplate = new RestTemplate();
 
-
             String idEmpresa = reportRequest.getIdEmpresa();
             if (idEmpresa == null || idEmpresa.isBlank()) {
-                messageService.sendMessage(numUser, "Nenhuma empresa associada ao seu usuário. Por favor, verifique sua configuração.");
+                messageService.sendMessage(numUser, "Nenhuma empresa associada ao seu usuário.");
                 return;
             }
+
             String empresaUrl = "http://localhost:3001/empresa/listarempresa/" + idEmpresa;
             String empresaJson = restTemplate.getForObject(empresaUrl, String.class);
             if (empresaJson == null || empresaJson.isBlank()) {
-                messageService.sendMessage(numUser, "Empresa não encontrada ou retorno inválido.");
+                messageService.sendMessage(numUser, "Empresa não encontrada.");
                 return;
             }
 
             JsonNode empresaNode = objectMapper.readTree(empresaJson);
-            
             empresaNode = unwrapMessageEnvelope(empresaNode);
+
             if (empresaNode == null || empresaNode.isNull()) {
-                messageService.sendMessage(numUser, "Empresa não encontrada ou formato inesperado.");
+                messageService.sendMessage(numUser, "Erro ao interpretar dados da empresa.");
                 return;
             }
+
             if (empresaNode.isArray() && empresaNode.size() > 0) {
                 empresaNode = empresaNode.get(0);
             }
 
-            String appKey = null;
-            String appSecret = null;
-            
-            if (empresaNode.has("app_key")) appKey = empresaNode.path("app_key").asText(null);
-            if ((appKey == null || appKey.isEmpty()) && empresaNode.has("appKey")) appKey = empresaNode.path("appKey").asText(null);
-            if (empresaNode.has("app_secret")) appSecret = empresaNode.path("app_secret").asText(null);
-            if ((appSecret == null || appSecret.isEmpty()) && empresaNode.has("appSecret")) appSecret = empresaNode.path("appSecret").asText(null);
+            String appKey = empresaNode.path("app_key").asText(empresaNode.path("appKey").asText(null));
+            String appSecret = empresaNode.path("app_secret").asText(empresaNode.path("appSecret").asText(null));
 
-            if (appKey == null || appKey.isEmpty() || appSecret == null || appSecret.isEmpty()) {
-                messageService.sendMessage(numUser, "Dados de integração da empresa não encontrados.");
+            if (appKey == null || appSecret == null) {
+                messageService.sendMessage(numUser, "Dados de integração não encontrados.");
                 return;
             }
 
-
             String url = "http://localhost:3001/omie/relatorio-financeiro?dias=" + dias;
+
             Map<String, Object> body = new HashMap<>();
             body.put("appKey", appKey);
             body.put("appSecret", appSecret);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-            String response = restTemplate.postForObject(url, entity, String.class);
 
+            String response = restTemplate.postForObject(url, entity, String.class);
             if (response == null) {
-                messageService.sendMessage(numUser, "Falha ao gerar relatório: resposta vazia do servidor.");
+                messageService.sendMessage(numUser, "Erro ao gerar relatório.");
                 return;
             }
-
-
             try {
                 JsonNode jsonResponse = objectMapper.readTree(response);
-
-                StringBuilder msg1 = new StringBuilder();
                 JsonNode resumo = jsonResponse.path("resumo_geral");
-                msg1.append("resumo_geral:\n");
                 JsonNode periodo = resumo.path("periodo_analisado");
-                if (!periodo.isMissingNode()) {
-                    String dataInicio = periodo.path("data_inicio").asText("");
-                    String dataFim = periodo.path("data_fim").asText("");
-                    int totalDias = periodo.path("total_dias").asInt(0);
-                    msg1.append("  periodo_analisado\n");
-                    msg1.append("    " + dataInicio + " - " + dataFim + "\n");
-                    msg1.append("      total de dias: " + totalDias + "\n\n");
-                }
-
-                StringBuilder full = new StringBuilder();
-                full.append(msg1.toString()).append("\n");
-                full.append("total receitas: " + resumo.path("total_receitas").asText("") + "\n");
-                full.append("total de despesas ou custos: " + resumo.path("total_despesas_custos").asText("") + "\n");
-                full.append("resultado liquido: " + resumo.path("resultado_liquido").asText("") + "\n\n");
-
-                full.append("detalhes por categoria:\n");
-                JsonNode detalhes = jsonResponse.path("detalhes_por_categoria");
-                if (detalhes.isObject()) {
-                    detalhes.fieldNames().forEachRemaining(field -> {
-                        JsonNode val = detalhes.get(field);
-                        String line = "  " + field + ": " + (val == null ? "" : val.asText());
-                        full.append(line + "\n");
-                    });
-                }
-
-                messageService.sendMessage(numUser, full.toString());
+                String dataInicio = periodo.path("data_inicio").asText("");
+                String dataFim = periodo.path("data_fim").asText("");
+                int totalDias = periodo.path("total_dias").asInt(0);
+                String totalReceitas = resumo.path("total_receitas").asText("");
+                String totalDespesas = resumo.path("total_despesas_custos").asText("");
+                String resultado = resumo.path("resultado_liquido").asText("");
+                JsonNode cat = jsonResponse.path("detalhes_por_categoria");
+                StringBuilder out = new StringBuilder();
+                out.append("📊 *Resumo Geral – Período Analisado*\n");
+                out.append("🗓️ De: ").append(dataInicio).append("\n");
+                out.append("🗓️ Até: ").append(dataFim).append("\n\n");
+                out.append("📅 *Duração:* ").append(totalDias).append(" dias\n\n");
+                out.append("💰 *Totais*\n\n");
+                out.append("Receitas: ").append(totalReceitas).append("\n\n");
+                out.append("Despesas / Custos: ").append(totalDespesas).append("\n\n");
+                out.append("Resultado Líquido: ").append(resultado).append("\n\n");
+                out.append("📂 *Detalhamento por Categoria*\n\n");
+                out.append("Receitas\n\n");
+                out.append("Receitas Operacionais: ").append(cat.path("receitas_operacionais").asText("")).append("\n");
+                out.append("Entradas Não Operacionais: ").append(cat.path("entradas_nao_operacionais").asText("")).append("\n\n");
+                out.append("Despesas e Custos\n\n");
+                out.append("Custos Variáveis: ").append(cat.path("custos_variaveis").asText("")).append("\n");
+                out.append("Despesas com Pessoal: ").append(cat.path("despesas_com_pessoal").asText("")).append("\n");
+                out.append("Despesas Administrativas: ").append(cat.path("despesas_administrativas").asText("")).append("\n");
+                out.append("Pró-labore: ").append(cat.path("pro_labore").asText("")).append("\n");
+                out.append("Investimentos: ").append(cat.path("investimentos").asText("")).append("\n");
+                out.append("Parcelamentos: ").append(cat.path("parcelamentos").asText("")).append("\n");
+                out.append("Saídas Não Operacionais: ").append(cat.path("saidas_nao_operacionais").asText("")).append("\n");
+                messageService.sendMessage(numUser, out.toString());
 
             } catch (Exception e) {
                 messageService.sendMessage(numUser, response);
             }
 
         } catch (Exception e) {
-            System.err.println("Erro ao solicitar relatório: " + e.getMessage());
-            e.printStackTrace();
-            messageService.sendMessage(numUser, "Erro ao gerar relatório: " + e.getMessage());
+            messageService.sendMessage(numUser, "Erro interno: " + e.getMessage());
         }
     }
-    
+
+
     public String analisarPapel(ReceiveMessageRequest request, String textInput) {
         if ("administrador".equalsIgnoreCase(request.getPapel())) {
             return MAPA_MENU_GESTAO_USUARIOS.getOrDefault(textInput, "ESTADO_INVALIDO");
         } else {
-            messageService.sendMessage(request.getFrom(), "Acesso negado. Função disponível apenas para administradores.");
+            messageService.sendMessage(request.getFrom(), "Acesso negado.");
             return "ACESSO_NEGADO";
         }
     }
@@ -206,8 +198,7 @@ public class ChatbotService {
         String textInput = request.getTexto();
         String estadoAtual = userStateManager.getState(numUser);
         reportRequest.setIdEmpresa(request.getId_empresa());
-
-        String proximoEstado;
+        String proximoEstado = "";
         String resposta = "";
 
         switch (estadoAtual) {
@@ -216,47 +207,39 @@ public class ChatbotService {
                     if ("administrador".equalsIgnoreCase(request.getPapel())) {
                         proximoEstado = "SUBMENU_GESTAO_USUARIOS";
                     } else {
-                        messageService.sendMessage(numUser, "Função disponível apenas para administradores.");
+                        messageService.sendMessage(numUser, "Função apenas para administradores.");
                         messageService.sendMessage(numUser, TEXTO_MENU_PRINCIPAL);
-                        proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
-                        userStateManager.setState(numUser, proximoEstado);
+                        userStateManager.setState(numUser, UserStateManagerService.MENU_PRINCIPAL);
                         return;
                     }
                 } else {
                     proximoEstado = MAPA_MENU_PRINCIPAL.getOrDefault(textInput, UserStateManagerService.MENU_PRINCIPAL);
                 }
                 break;
-
             case "SUBMENU_RELATORIO":
-                int dias = switch (textInput) {
+                proximoEstado = MAPA_MENU_RELATORIO.getOrDefault(textInput, "ESTADO_INVALIDO");
+                break;
+            case "SUBMENU_RESUMO":
+                proximoEstado = MAPA_MENU_RESUMO.getOrDefault(textInput, "ESTADO_INVALIDO");
+
+                int diasResumo = switch (textInput) {
                     case "1" -> 7;
                     case "2" -> 15;
                     case "3" -> 30;
                     default -> 0;
                 };
 
-                if (dias > 0) {
-                    resposta = "Gerando relatório de " + dias + " dias...";
-                   
-                    messageService.sendMessage(numUser, resposta);
+                if (diasResumo > 0) {
+                    messageService.sendMessage(numUser, "Gerando resumo de " + diasResumo + " dias...");
+                    enviarRelatorio(numUser, diasResumo, reportRequest);
                     resposta = "";
-                    enviarRelatorio(numUser, dias, reportRequest);
                 } else if ("0".equals(textInput)) {
                     proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
                     resposta = TEXTO_MENU_PRINCIPAL;
-                    userStateManager.setState(numUser, proximoEstado);
-                    messageService.sendMessage(numUser, resposta);
-                    return;
                 } else {
-                    resposta = "Opção inválida!\n" + TEXTO_MENU_RELATORIO;
+                    resposta = "Opção inválida!\n" + TEXTO_MENU_RESUMO;
                 }
-
-                proximoEstado = MAPA_MENU_RELATORIO.getOrDefault(textInput, "ESTADO_INVALIDO");
                 break;
-            case "SUBMENU_RESUMO":
-                proximoEstado = MAPA_MENU_RESUMO.getOrDefault(textInput, "ESTADO_INVALIDO");
-                break;
-
             case "SUBMENU_GESTAO_USUARIOS":
                 proximoEstado = analisarPapel(request, textInput);
                 break;
@@ -271,7 +254,7 @@ public class ChatbotService {
             case "ACESSO_NEGADO" -> { return; }
             case "ESTADO_INVALIDO" -> {
                 resposta = "Opção inválida!\n" + TEXTO_MENU_PRINCIPAL;
-                proximoEstado = estadoAtual;
+                proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
             }
         }
         if (resposta != null && !resposta.isBlank()) {
@@ -280,9 +263,9 @@ public class ChatbotService {
         userStateManager.setState(numUser, proximoEstado);
     }
     public void inactiveUser(String numUser) {
-        messageService.sendMessage(numUser, "Contate um administrador para reativar seu acesso ao chatbot.");
+        messageService.sendMessage(numUser, "Contate um administrador para reativar seu acesso.");
     }
     public void unknownUser(String numUser) {
-        messageService.sendMessage(numUser, "Usuário não encontrado. Por favor, contate um administrador para se cadastrar.");
+        messageService.sendMessage(numUser, "Usuário não encontrado. Contate um administrador.");
     }
 }
