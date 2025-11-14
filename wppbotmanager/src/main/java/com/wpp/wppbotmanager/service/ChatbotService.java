@@ -238,6 +238,10 @@ public class ChatbotService {
                     case "1" -> 7;
                     case "2" -> 15;
                     case "3" -> 30;
+
+
+
+                    case "6" -> -1;
                     default -> 0;
                 };
 
@@ -248,12 +252,41 @@ public class ChatbotService {
                 } else if ("0".equals(textInput)) {
                     proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
                     resposta = TEXTO_MENU_PRINCIPAL;
+                } else if (diasResumo == -1) {
+                    messageService.sendMessage(numUser, "Por favor, envie o número personalizado de dias:");
+                    proximoEstado = UserStateManagerService.AGUARDANDO_NUMERO_PERSONALIZADO_RESUMO;
+                    break;
                 } else {
                     resposta = "Opção inválida!\n" + TEXTO_MENU_RESUMO;
                 }
                 break;
             case "SUBMENU_GESTAO_USUARIOS":
                 proximoEstado = analisarPapel(request, textInput);
+                break;
+            case UserStateManagerService.AGUARDANDO_NUMERO_PERSONALIZADO_RESUMO:
+
+                try {
+                    int numeroPersonalizado = Integer.parseInt(textInput);
+
+                    if (numeroPersonalizado <= 0) {
+                        messageService.sendMessage(numUser, "Número inválido! Envie um valor maior que zero.");
+                        return;
+                    }
+
+                    messageService.sendMessage(numUser,
+                            "Gerando resumo de " + numeroPersonalizado + " dias..."
+                    );
+
+                    enviarRelatorio(numUser, numeroPersonalizado, reportRequest);
+
+                    proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
+                    resposta = TEXTO_MENU_PRINCIPAL;
+
+                } catch (NumberFormatException e) {
+                    messageService.sendMessage(numUser, "Valor inválido! Envie apenas números.");
+                    return;
+                }
+
                 break;
             default:
                 proximoEstado = UserStateManagerService.MENU_PRINCIPAL;

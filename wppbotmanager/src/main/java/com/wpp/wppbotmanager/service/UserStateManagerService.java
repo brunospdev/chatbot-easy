@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserStateManagerService {
     public static final String MENU_PRINCIPAL = "MENU_PRINCIPAL";
+    public static final String AGUARDANDO_NUMERO_PERSONALIZADO_RESUMO = "AGUARDANDO_NUMERO_PERSONALIZADO_RESUMO";
     private final Cache userStateCache;
 
     public UserStateManagerService(CacheManager cacheManager) {
