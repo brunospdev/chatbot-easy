@@ -8,7 +8,7 @@ interface OmieCategoria {
 
 interface OmieMovimento {
   detalhes: {
-    dDtPagamento: string;
+    dDtPagamento: string; 
     cCodCateg: string;
   };
   resumo?: { nValPago?: number };
@@ -116,7 +116,7 @@ function processarCategorias(todasAsCategorias: OmieCategoria[]): ProcessedCateg
                     codigoGerencialPrincipal = codigo;
                     break;
                 }
-            }
+             }
         }
 
         if (!codigoGerencialPrincipal && CODIGO_POR_DESCRICAO[descricao]) {
@@ -146,10 +146,14 @@ function processarCategorias(todasAsCategorias: OmieCategoria[]): ProcessedCateg
     return { mapaClassificacao };
 }
 
-export async function gerarRelatorioFinanceiroGeral(appKey: string, appSecret: string, dias: number): Promise<Record<string, number>> {
-  const dataFim = new Date();
-  const dataInicio = new Date();
-  dataInicio.setDate(dataFim.getDate() - dias);
+
+export async function gerarRelatorioFinanceiroGeral(
+    appKey: string, 
+    appSecret: string, 
+    dataInicio: Date, 
+    dataFim: Date
+): Promise<Record<string, number>> {
+  
   const dataInicioStr = dataInicio.toISOString();
   const dataFimStr = dataFim.toISOString();
 
@@ -174,14 +178,17 @@ export async function gerarRelatorioFinanceiroGeral(appKey: string, appSecret: s
         continue;
     }
 
+    let dataPagamentoISO: string;
     try {
         const [dia, mes, ano] = dataPagamentoStr.split('/');
-        const dataPagamentoISO = `${ano}-${mes}-${dia}T12:00:00.000Z`;
+        dataPagamentoISO = `${ano}-${mes}-${dia}T12:00:00.000Z`;
+        
         if (dataPagamentoISO < dataInicioStr || dataPagamentoISO > dataFimStr) {
             continue;
         }
     } catch(e) {
-        continue;
+        console.error("Erro ao parsear data:", dataPagamentoStr, e);
+        continue; 
     }
 
     const codigoGrupoPrincipal = mapaClassificacao[codigoCategoriaOmie];
