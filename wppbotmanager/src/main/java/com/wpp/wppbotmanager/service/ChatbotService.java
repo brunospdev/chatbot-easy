@@ -36,30 +36,35 @@ public class ChatbotService {
 
     private static final String TEXTO_MENU_PRINCIPAL =
             "Olá, bem-vindo ao atendimento do Chatbot Easy!\nEscolha uma opção: \n" +
-                    "1. Resumo\n" +
-                    "2. Relatório\n" +
-                    "3. Gestão de Usuários";
+                    "1️⃣ - Resumo\n" +
+                    "2️⃣ - Relatório\n" +
+                    "3️⃣ - Gestão de Usuários";
 
     private static final String TEXTO_MENU_RESUMO =
             "Escolha um intervalo:\n" +
-                    "1. 7 dias\n" +
-                    "2. 15 dias\n" +
-                    "3. 30 dias\n" +
-                    "4. Período Personalizado\n" +
-                    "0. Voltar";
+                    "1️⃣ - 7 dias\n" +
+                    "2️⃣ - 15 dias\n" +
+                    "3️⃣ - 30 dias\n" +
+                    "4️⃣ - Mês atual\n" +
+                    "5️⃣ - Mês anterior\n" +
+                    "6️⃣ - Personalizado\n" +
+                    "0️⃣ - Voltar";
 
     private static final String TEXTO_MENU_RELATORIO =
             "Escolha um intervalo:\n" +
-                    "1. 7 dias\n" +
-                    "2. 15 dias\n" +
-                    "3. 30 dias\n" +
-                    "0. Voltar";
+                    "1️⃣ - 7 dias\n" +
+                    "2️⃣ - 15 dias\n" +
+                    "3️⃣ - 30 dias\n" +
+                    "4️⃣ - Mês atual\n" +
+                    "5️⃣ - Mês anterior\n" +
+                    "6️⃣ - Personalizado\n" +
+                    "0️⃣ - Voltar";
 
     private static final String TEXTO_MENU_GESTAO_USUARIOS =
-            "1. Cadastrar usuários\n" +
-                    "2. Listar usuários\n" +
-                    "3. Deletar usuários\n" +
-                    "0. Voltar";
+                    "1️⃣ - Cadastrar usuários\n" +
+                    "2️⃣ - Listar usuários\n" +
+                    "3️⃣ - Deletar usuários\n" +
+                    "0️⃣ - Voltar";
 
     private static final Map<String, String> MAPA_MENU_PRINCIPAL = Map.of(
             "1", "SUBMENU_RESUMO",
@@ -71,7 +76,9 @@ public class ChatbotService {
             "1", "7_DIAS_RESUMO",
             "2", "15_DIAS_RESUMO",
             "3", "30_DIAS_RESUMO",
-            "4", "Periodo Personalizado",
+            "4", "MES_ATUAL_RESUMO",
+            "5", "MES_ANTERIOR_RESUMO",
+            "6", "PERSONALIZADO_RESUMO",
             "0", UserStateManagerService.MENU_PRINCIPAL
     );
 
@@ -79,6 +86,9 @@ public class ChatbotService {
             "1", "7_DIAS_RELATORIO",
             "2", "15_DIAS_RELATORIO",
             "3", "30_DIAS_RELATORIO",
+            "4", "MES_ATUAL_RELATORIO",
+            "5", "MES_ANTERIOR_RELATORIO",
+            "6", "PERSONALIZADO_RELATORIO",
             "0", UserStateManagerService.MENU_PRINCIPAL
     );
 
@@ -228,10 +238,8 @@ public class ChatbotService {
                     case "1" -> 7;
                     case "2" -> 15;
                     case "3" -> 30;
-                    case "4" -> -1;
                     default -> 0;
                 };
-
 
                 if (diasResumo > 0) {
                     messageService.sendMessage(numUser, "Gerando resumo de " + diasResumo + " dias...");
@@ -240,20 +248,6 @@ public class ChatbotService {
                 } else if ("0".equals(textInput)) {
                     proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
                     resposta = TEXTO_MENU_PRINCIPAL;
-                }else if (diasResumo == -1) {
-                    messageService.sendMessage(numUser, "Por favor, envie o número personalizado de dias");
-                    try {
-                        diasResumo = Integer.parseInt(textInput);
-                        messageService.sendMessage(numUser, "Gerando resumo de " + diasResumo + " dias...");
-                        enviarRelatorio(numUser, diasResumo, reportRequest);
-                        resposta = "";
-
-                    } catch (NumberFormatException e) {
-                        messageService.sendMessage(numUser, "Valor inválido. Envie apenas números.");
-                        proximoEstado = "SUBMENU_RESUMO";
-                        messageService.sendMessage(numUser, proximoEstado);
-                        return;
-                    }
                 } else {
                     resposta = "Opção inválida!\n" + TEXTO_MENU_RESUMO;
                 }
