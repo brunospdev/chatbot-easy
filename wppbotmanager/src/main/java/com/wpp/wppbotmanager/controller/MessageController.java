@@ -54,7 +54,7 @@ public class MessageController {
             String telefone = dados[0];
             String atividadeValor = dados[1];
             String papelValor = dados[2];
-  
+
             boolean existe = telefone != null && telefone.endsWith(numUser);
 
             if (existe) { 

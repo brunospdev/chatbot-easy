@@ -68,3 +68,19 @@ ALTER TABLE `Solicitacao` ADD CONSTRAINT `Solicitacao_id_usuario_fkey` FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE `ConfiguracaoERP` ADD CONSTRAINT `ConfiguracaoERP_id_empresa_fkey` FOREIGN KEY (`id_empresa`) REFERENCES `Empresa`(`id_empresa`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+CREATE TABLE `Agendamento` (
+    `id_agendamento` INT NOT NULL AUTO_INCREMENT,
+    `data_solicitacao` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `proxima_execucao` DATETIME DEFAULT NULL,
+    `status` ENUM('ativo','inativo') NOT NULL DEFAULT 'inativo',
+    `id_usuario` INT NOT NULL,
+    PRIMARY KEY (`id_agendamento`),
+    KEY `idx_agendamento_usuario` (`id_usuario`),
+    CONSTRAINT `fk_agendamento_usuario`
+        FOREIGN KEY (`id_usuario`)
+        REFERENCES `Usuario`(`id_user`)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

@@ -6,16 +6,18 @@ import solicitacoesRoutes from "./routes/solicitacoesRoutes";
 import configErpRoutes from "./routes/configErpRoutes";
 import userRoutes from "./routes/userRoutes";
 import omieRoutes from "./routes/omieRoutes";
+import agendRoutes from "./routes/agendRoutes";
 
 const app = express()
 app.use(express.json())
 
-app.use("/wpp", messageRoutes)
+app.use("/wpp", messageRoutes);
 app.use("/empresa", empresaRoutes);
-app.use("/admin", adminRoutes)
-app.use("/solicitacoes", solicitacoesRoutes)
-app.use("/config-erp", configErpRoutes)
-app.use("/users", userRoutes)
+app.use("/admin", adminRoutes);
+app.use("/solicitacoes", solicitacoesRoutes);
+app.use("/config-erp", configErpRoutes);
+app.use("/users", userRoutes);
 app.use("/omie", omieRoutes);
+app.use("/agend", agendRoutes);
 
 export default app
