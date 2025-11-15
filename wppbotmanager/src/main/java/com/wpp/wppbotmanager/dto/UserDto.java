@@ -3,6 +3,7 @@ package com.wpp.wppbotmanager.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wpp.wppbotmanager.dto.enums.atividade.Atividade;
 import com.wpp.wppbotmanager.dto.enums.papel.Papel;
+import com.wpp.wppbotmanager.dto.enums.primeiro_contato.Primeiro_contato;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class UserDto {
   private Papel papel;
   public  Atividade atividade;
   private Integer id_empresa;
+  public Primeiro_contato primeiro_contato;
 
   public UserDto() {}
 
@@ -27,5 +29,6 @@ public class UserDto {
     this.atividade = atividade;
     this.papel = papel;
     this.id_empresa = id_empresa;
+    this.primeiro_contato = primeiro_contato;
   }
 }
