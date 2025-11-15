@@ -65,6 +65,24 @@ return res.status(status).json({ data: message });
   }
 };
 
+const getUsuarioByTelefone = async (req: Request, res: Response) => {
+  try {
+    const { telefone } = req.params;
+    console.log(`[DEBUG] Buscando usuário com telefone: ${telefone}`);
+    const { type, message, status } = await userService.getUsuarioByTelefone(telefone);
+    if (type) {
+      console.log(`[DEBUG] Usuário não encontrado: ${message}`);
+      return res.status(status).json({ message });
+    }
+    console.log(`[DEBUG] Usuário encontrado:`, message);
+    // Always return with consistent format: { user: {...} } or { message: {...} }
+    return res.status(status).json(message);
+  } catch (error) {
+    console.error(`[ERROR] Exception in getUsuarioByTelefone:`, error);
+    return res.status(500).json({ message: 'Erro interno no servidor' });
+  }
+};
+
 
 export default {
     criarUsuario,
@@ -72,5 +90,6 @@ export default {
     updateUsuario,
     deleteUsuario,
     getUsuarioById,
-    getUsuariosByEmp
+    getUsuariosByEmp,
+    getUsuarioByTelefone
 }

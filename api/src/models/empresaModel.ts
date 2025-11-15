@@ -23,7 +23,7 @@ const getAllEmpresas = async () => {
 
 const getEmpresaById = async (id: number) => {
   const [[result]]: any = await connection.execute(
-    'SELECT * FROM Empresa WHERE id = ?',
+    'SELECT * FROM Empresa WHERE id_empresa = ?',
     [id]
   )
   return result
@@ -55,7 +55,7 @@ const updateEmpresa = async (id: number, empresa: Partial<Empresa>) => {
     throw new Error('Nenhum campo válido para atualização.')
   }
 
-  const query = `UPDATE Empresa SET ${setClauses.join(', ')} WHERE id = ?`
+  const query = `UPDATE Empresa SET ${setClauses.join(', ')} WHERE id_empresa = ?`
   values.push(id)
 
   const [{ affectedRows }]: any = await connection.execute(query, values)
@@ -64,7 +64,7 @@ const updateEmpresa = async (id: number, empresa: Partial<Empresa>) => {
 
 const deleteEmpresa = async (id: number) => {
   const [{ affectedRows }]: any = await connection.execute(
-    'DELETE FROM Empresa WHERE id = ?',
+    'DELETE FROM Empresa WHERE id_empresa = ?',
     [id]
   )
   return affectedRows

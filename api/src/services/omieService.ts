@@ -5,7 +5,6 @@ interface OmieCategoria {
   descricao: string;
   dadosDRE?: { descricaoDRE: string };
 }
-
 interface OmieMovimento {
   detalhes: {
     dDtPagamento: string;
@@ -13,23 +12,21 @@ interface OmieMovimento {
   };
   resumo?: { nValPago?: number };
 }
-
 interface ProcessedCategories {
   mapaClassificacao: Record<string, string>;
 }
 
 const MAPA_CODIGO_GERENCIAL: Record<string, string> = {
-  "1.0": "1.0 - Receitas Operacionais",
-  "2.1": "2.1 - Custos Variáveis",
-  "3.0": "3.0 - Despesas com Pessoal",
-  "3.1": "3.1 - Despesas Administrativas",
-  "3.2": "3.2 - Pro-Labore",
-  "4.0": "4.0 - Investimentos",
-  "5.0": "5.0 - Parcelamentos",
-  "6.0": "6.0 - Entradas Não Operacionais",
-  "7.0": "7.0 - Saídas Não Operacionais"
+  "1.0": "receitas_operacionais",
+  "2.1": "custos_variaveis",
+  "3.0": "despesas_com_pessoal",
+  "3.1": "despesas_administrativas",
+  "3.2": "pro_labore",
+  "4.0": "investimentos",
+  "5.0": "parcelamentos",
+  "6.0": "entradas_nao_operacionais",
+  "7.0": "saidas_nao_operacionais"
 };
-
 const CODIGO_POR_DESCRICAO: Record<string, string> = Object.entries(
   MAPA_CODIGO_GERENCIAL
 ).reduce((acc, [codigo, descricao]) => {
@@ -42,11 +39,17 @@ const apiClient = axios.create({
   timeout: 60000,
 });
 
+function formatDateToOmieApi(date: Date): string {
+  const dia = String(date.getUTCDate()).padStart(2, '0');
+  const mes = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const ano = date.getUTCFullYear();
+  return `${dia}/${mes}/${ano}`;
+}
+
 async function buscarCategoriasPaginado(appKey: string, appSecret: string): Promise<OmieCategoria[]> {
   let todasAsCategorias: OmieCategoria[] = [];
   let paginaAtual = 1;
   let totalDePaginas = 1;
-
   do {
     const payload = {
       call: "ListarCategorias",
@@ -68,19 +71,32 @@ async function buscarCategoriasPaginado(appKey: string, appSecret: string): Prom
     }
     paginaAtual++;
   } while (paginaAtual <= totalDePaginas);
-
   return todasAsCategorias;
 }
 
-async function buscarMovimentosPaginado(appKey: string, appSecret: string): Promise<OmieMovimento[]> {
+async function buscarMovimentosPaginado(
+    appKey: string, 
+    appSecret: string,
+    dataInicio: Date, 
+    dataFim: Date
+): Promise<OmieMovimento[]> {
     let todosMovimentos: OmieMovimento[] = [];
     let paginaAtual = 1;
     let totalDePaginas = 1;
+
+    const dataInicioApi = formatDateToOmieApi(dataInicio);
+    const dataFimApi = formatDateToOmieApi(dataFim);
+
     do {
         const payload = {
             call: "ListarMovimentos",
             app_key: appKey, app_secret: appSecret,
-            param: [{ nPagina: paginaAtual, nRegPorPagina: 500 }],
+            param: [{ 
+                nPagina: paginaAtual, 
+                nRegPorPagina: 500,
+                dDtPagtoDe: dataInicioApi,
+                dDtPagtoAte: dataFimApi
+            }],
         };
         try {
             const response = await apiClient.post("/financas/mf/", payload);
@@ -102,27 +118,22 @@ async function buscarMovimentosPaginado(appKey: string, appSecret: string): Prom
 
 function processarCategorias(todasAsCategorias: OmieCategoria[]): ProcessedCategories {
     const mapaClassificacao: Record<string, string> = {};
-
     for (const categoria of todasAsCategorias) {
         if (!categoria.codigo) continue;
-
         let codigoGerencialPrincipal: string | null = null;
         const descricao = categoria.descricao || "";
         const descricaoDRE = categoria.dadosDRE?.descricaoDRE;
-
         if (descricaoDRE) {
              for (const codigo in MAPA_CODIGO_GERENCIAL) {
                 if (descricaoDRE.startsWith(codigo) || descricaoDRE === MAPA_CODIGO_GERENCIAL[codigo]) {
                     codigoGerencialPrincipal = codigo;
                     break;
                 }
-            }
+             }
         }
-
         if (!codigoGerencialPrincipal && CODIGO_POR_DESCRICAO[descricao]) {
             codigoGerencialPrincipal = CODIGO_POR_DESCRICAO[descricao];
         }
-
         if (!codigoGerencialPrincipal) {
             const match = descricao.match(/^(\d+(\.\d+)?)/);
             if (match) {
@@ -137,25 +148,23 @@ function processarCategorias(todasAsCategorias: OmieCategoria[]): ProcessedCateg
                 }
             }
         }
-
         if (codigoGerencialPrincipal) {
             mapaClassificacao[categoria.codigo] = codigoGerencialPrincipal;
         }
     }
-
     return { mapaClassificacao };
 }
 
-export async function gerarRelatorioFinanceiroGeral(appKey: string, appSecret: string, dias: number): Promise<Record<string, number>> {
-  const dataFim = new Date();
-  const dataInicio = new Date();
-  dataInicio.setDate(dataFim.getDate() - dias);
-  const dataInicioStr = dataInicio.toISOString();
-  const dataFimStr = dataFim.toISOString();
-
+export async function gerarRelatorioFinanceiroGeral(
+    appKey: string, 
+    appSecret: string, 
+    dataInicio: Date, 
+    dataFim: Date
+): Promise<Record<string, number>> {
+  
   const [categorias, todosOsMovimentos] = await Promise.all([
     buscarCategoriasPaginado(appKey, appSecret),
-    buscarMovimentosPaginado(appKey, appSecret)
+    buscarMovimentosPaginado(appKey, appSecret, dataInicio, dataFim) 
   ]);
 
   const { mapaClassificacao } = processarCategorias(categorias);
@@ -168,19 +177,9 @@ export async function gerarRelatorioFinanceiroGeral(appKey: string, appSecret: s
   for (const mov of todosOsMovimentos) {
     const detalhes = mov.detalhes;
     const codigoCategoriaOmie = detalhes?.cCodCateg;
-    const dataPagamentoStr = detalhes?.dDtPagamento;
+    const dataPagamentoStr = detalhes?.dDtPagamento; 
 
-    if (!codigoCategoriaOmie || !dataPagamentoStr || dataPagamentoStr.length !== 10) {
-        continue;
-    }
-
-    try {
-        const [dia, mes, ano] = dataPagamentoStr.split('/');
-        const dataPagamentoISO = `${ano}-${mes}-${dia}T12:00:00.000Z`;
-        if (dataPagamentoISO < dataInicioStr || dataPagamentoISO > dataFimStr) {
-            continue;
-        }
-    } catch(e) {
+    if (!codigoCategoriaOmie || !dataPagamentoStr) {
         continue;
     }
 
