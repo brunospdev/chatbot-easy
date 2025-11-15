@@ -3,6 +3,7 @@ import makeWASocket, {
   useMultiFileAuthState,
   fetchLatestBaileysVersion,
   DisconnectReason,
+  jidNormalizedUser,
   proto
 } from "@whiskeysockets/baileys";
 import pino from "pino";
@@ -48,9 +49,17 @@ export async function connectToWhatsApp() {
   sock.ev.on("messages.upsert", async ({ messages }) => {
     const msg = messages[0];
     if (!msg.message || msg.key.fromMe) return;
+    if (msg.key.remoteJid) {
+        msg.key.remoteJid = jidNormalizedUser(msg.key.remoteJid);
+    } else {
+        return;
+    }
 
-    if (msg.key.remoteJid?.endsWith("@g.us")) return;
-    if (msg.key.remoteJid?.endsWith("@newsletter")) return;
+    const rjid = msg.key.remoteJid;
+
+    if (rjid.endsWith("@g.us")) return;
+    if (rjid.endsWith("@newsletter")) return;
+    if (rjid.endsWith("status@broadcast")) return;
 
     let textoMensagem = "";
     if (msg.message.conversation) {
@@ -66,7 +75,7 @@ export async function connectToWhatsApp() {
     }
 
     const sender = msg.key.remoteJid
-    const senderNumber = sender?.replace(/@s\.whatsapp\.net$/, "") || "";
+    const senderNumber = rjid.replace(/@s\.whatsapp\.net$/, "") || "";
 
     const zona = "America/Sao_Paulo";
     const usuario = await Usuario.getUsuarioByNumber(senderNumber);
