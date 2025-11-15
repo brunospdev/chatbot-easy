@@ -35,36 +35,41 @@ public class ChatbotService {
     }
 
     private static final String TEXTO_MENU_PRINCIPAL =
-            "Olá, bem-vindo ao atendimento do Chatbot Easy!\nEscolha uma opção: \n" +
-                    "1️⃣ - Resumo\n" +
-                    "2️⃣ - Relatório\n" +
-                    "3️⃣ - Gestão de Usuários";
+            """
+                    Olá, bem-vindo ao atendimento do Chatbot Easy!
+                    Escolha uma opção:\s
+                    1️⃣ - Resumo
+                    2️⃣ - Relatório
+                    3️⃣ - Gestão de Usuários""";
 
     private static final String TEXTO_MENU_RESUMO =
-            "Escolha um intervalo:\n" +
-                    "1️⃣ - 7 dias\n" +
-                    "2️⃣ - 15 dias\n" +
-                    "3️⃣ - 30 dias\n" +
-                    "4️⃣ - Mês atual\n" +
-                    "5️⃣ - Mês anterior\n" +
-                    "6️⃣ - Personalizado\n" +
-                    "0️⃣ - Voltar";
+            """
+                    Escolha um intervalo:
+                    1️⃣ - 7 dias
+                    2️⃣ - 15 dias
+                    3️⃣ - 30 dias
+                    4️⃣ - Mês atual
+                    5️⃣ - Mês anterior
+                    6️⃣ - Personalizado
+                    0️⃣ - Voltar""";
 
     private static final String TEXTO_MENU_RELATORIO =
-            "Escolha um intervalo:\n" +
-                    "1️⃣ - 7 dias\n" +
-                    "2️⃣ - 15 dias\n" +
-                    "3️⃣ - 30 dias\n" +
-                    "4️⃣ - Mês atual\n" +
-                    "5️⃣ - Mês anterior\n" +
-                    "6️⃣ - Personalizado\n" +
-                    "0️⃣ - Voltar";
+            """
+                    Escolha um intervalo:
+                    1️⃣ - 7 dias
+                    2️⃣ - 15 dias
+                    3️⃣ - 30 dias
+                    4️⃣ - Mês atual
+                    5️⃣ - Mês anterior
+                    6️⃣ - Personalizado
+                    0️⃣ - Voltar""";
 
     private static final String TEXTO_MENU_GESTAO_USUARIOS =
-                    "1️⃣ - Cadastrar usuários\n" +
-                    "2️⃣ - Listar usuários\n" +
-                    "3️⃣ - Deletar usuários\n" +
-                    "0️⃣ - Voltar";
+            """
+                    1️⃣ - Cadastrar usuários
+                    2️⃣ - Listar usuários
+                    3️⃣ - Deletar usuários
+                    0️⃣ - Voltar""";
 
     private static final Map<String, String> MAPA_MENU_PRINCIPAL = Map.of(
             "1", "SUBMENU_RESUMO",
@@ -101,7 +106,7 @@ public class ChatbotService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public void enviarRelatorio(String numUser, int dias, ReceiveReportRequest reportRequest) {
+    public void enviarRelatorio(String numUser, int dias,String dataInicio, String dataFim, ReceiveReportRequest reportRequest) {
         try {
             RestTemplate restTemplate = new RestTemplate();
 
@@ -138,7 +143,12 @@ public class ChatbotService {
                 return;
             }
 
-            String url = "http://localhost:3001/omie/relatorio-financeiro?dias=" + dias;
+            String url;
+            if (dias != 0) {
+                url = "http://localhost:3002/relatorio/resumo_geral/dias/" + dias;
+            } else {
+                url = "http://localhost:3001/omie/relatorio-financeiro?data_inicio=" + dataInicio + "&data_fim=" + dataFim;
+            }
 
             Map<String, Object> body = new HashMap<>();
             body.put("appKey", appKey);
@@ -157,35 +167,32 @@ public class ChatbotService {
                 JsonNode jsonResponse = objectMapper.readTree(response);
                 JsonNode resumo = jsonResponse.path("resumo_geral");
                 JsonNode periodo = resumo.path("periodo_analisado");
-                String dataInicio = periodo.path("data_inicio").asText("");
-                String dataFim = periodo.path("data_fim").asText("");
                 int totalDias = periodo.path("total_dias").asInt(0);
                 String totalReceitas = resumo.path("total_receitas").asText("");
                 String totalDespesas = resumo.path("total_despesas_custos").asText("");
                 String resultado = resumo.path("resultado_liquido").asText("");
                 JsonNode cat = jsonResponse.path("detalhes_por_categoria");
-                StringBuilder out = new StringBuilder();
-                out.append("📊 *Resumo Geral – Período Analisado*\n");
-                out.append("🗓️ De: ").append(dataInicio).append("\n");
-                out.append("🗓️ Até: ").append(dataFim).append("\n\n");
-                out.append("📅 *Duração:* ").append(totalDias).append(" dias\n\n");
-                out.append("💰 *Totais*\n\n");
-                out.append("Receitas: ").append(totalReceitas).append("\n\n");
-                out.append("Despesas / Custos: ").append(totalDespesas).append("\n\n");
-                out.append("Resultado Líquido: ").append(resultado).append("\n\n");
-                out.append("📂 *Detalhamento por Categoria*\n\n");
-                out.append("Receitas\n\n");
-                out.append("Receitas Operacionais: ").append(cat.path("receitas_operacionais").asText("")).append("\n");
-                out.append("Entradas Não Operacionais: ").append(cat.path("entradas_nao_operacionais").asText("")).append("\n\n");
-                out.append("Despesas e Custos\n\n");
-                out.append("Custos Variáveis: ").append(cat.path("custos_variaveis").asText("")).append("\n");
-                out.append("Despesas com Pessoal: ").append(cat.path("despesas_com_pessoal").asText("")).append("\n");
-                out.append("Despesas Administrativas: ").append(cat.path("despesas_administrativas").asText("")).append("\n");
-                out.append("Pró-labore: ").append(cat.path("pro_labore").asText("")).append("\n");
-                out.append("Investimentos: ").append(cat.path("investimentos").asText("")).append("\n");
-                out.append("Parcelamentos: ").append(cat.path("parcelamentos").asText("")).append("\n");
-                out.append("Saídas Não Operacionais: ").append(cat.path("saidas_nao_operacionais").asText("")).append("\n");
-                messageService.sendMessage(numUser, out.toString());
+                String out = "📊 *Resumo Geral – Período Analisado*\n" +
+                        "🗓️ De: " + dataInicio + "\n" +
+                        "🗓️ Até: " + dataFim + "\n\n" +
+                        "📅 *Duração:* " + totalDias + " dias\n\n" +
+                        "💰 *Totais*\n\n" +
+                        "Receitas: " + totalReceitas + "\n\n" +
+                        "Despesas / Custos: " + totalDespesas + "\n\n" +
+                        "Resultado Líquido: " + resultado + "\n\n" +
+                        "📂 *Detalhamento por Categoria*\n\n" +
+                        "Receitas\n\n" +
+                        "Receitas Operacionais: " + cat.path("receitas_operacionais").asText("") + "\n" +
+                        "Entradas Não Operacionais: " + cat.path("entradas_nao_operacionais").asText("") + "\n\n" +
+                        "Despesas e Custos\n\n" +
+                        "Custos Variáveis: " + cat.path("custos_variaveis").asText("") + "\n" +
+                        "Despesas com Pessoal: " + cat.path("despesas_com_pessoal").asText("") + "\n" +
+                        "Despesas Administrativas: " + cat.path("despesas_administrativas").asText("") + "\n" +
+                        "Pró-labore: " + cat.path("pro_labore").asText("") + "\n" +
+                        "Investimentos: " + cat.path("investimentos").asText("") + "\n" +
+                        "Parcelamentos: " + cat.path("parcelamentos").asText("") + "\n" +
+                        "Saídas Não Operacionais: " + cat.path("saidas_nao_operacionais").asText("") + "\n";
+                messageService.sendMessage(numUser, out);
 
             } catch (Exception e) {
                 messageService.sendMessage(numUser, response);
@@ -210,7 +217,7 @@ public class ChatbotService {
         String textInput = request.getTexto();
         String estadoAtual = userStateManager.getState(numUser);
         reportRequest.setIdEmpresa(request.getId_empresa());
-        String proximoEstado = "";
+        String proximoEstado;
         String resposta = "";
 
         switch (estadoAtual) {
@@ -247,14 +254,14 @@ public class ChatbotService {
 
                 if (diasResumo > 0) {
                     messageService.sendMessage(numUser, "Gerando resumo de " + diasResumo + " dias...");
-                    enviarRelatorio(numUser, diasResumo, reportRequest);
+                    enviarRelatorio(numUser, diasResumo,null, null, reportRequest);
                     resposta = "";
                 } else if ("0".equals(textInput)) {
                     proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
                     resposta = TEXTO_MENU_PRINCIPAL;
                 } else if (diasResumo == -1) {
-                    messageService.sendMessage(numUser, "Por favor, envie o número personalizado de dias:");
-                    proximoEstado = UserStateManagerService.AGUARDANDO_NUMERO_PERSONALIZADO_RESUMO;
+                    messageService.sendMessage(numUser, "Por favor, insira a data início (formato DD/MM/AAAA):");
+                    proximoEstado = UserStateManagerService.INSERINDO_DATA_INICIO;
                     break;
                 } else {
                     resposta = "Opção inválida!\n" + TEXTO_MENU_RESUMO;
@@ -263,31 +270,33 @@ public class ChatbotService {
             case "SUBMENU_GESTAO_USUARIOS":
                 proximoEstado = analisarPapel(request, textInput);
                 break;
-            case UserStateManagerService.AGUARDANDO_NUMERO_PERSONALIZADO_RESUMO:
-
-                try {
-                    int numeroPersonalizado = Integer.parseInt(textInput);
-
-                    if (numeroPersonalizado <= 0) {
-                        messageService.sendMessage(numUser, "Número inválido! Envie um valor maior que zero.");
-                        return;
-                    }
-
-                    messageService.sendMessage(numUser,
-                            "Gerando resumo de " + numeroPersonalizado + " dias..."
-                    );
-
-                    enviarRelatorio(numUser, numeroPersonalizado, reportRequest);
-
-                    proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
-                    resposta = TEXTO_MENU_PRINCIPAL;
-
-                } catch (NumberFormatException e) {
-                    messageService.sendMessage(numUser, "Valor inválido! Envie apenas números.");
-                    return;
-                }
-
+            case UserStateManagerService.INSERINDO_DATA_INICIO:
+                userStateManager.setTempValue(numUser, "dataInicio", textInput);
+                messageService.sendMessage(numUser, "Data início registrada: " + textInput);
+                messageService.sendMessage(numUser, "Por favor, insira a data fim:");
+                proximoEstado = UserStateManagerService.INSERINDO_DATA_FIM;
                 break;
+
+            case UserStateManagerService.INSERINDO_DATA_FIM:
+                messageService.sendMessage(numUser, "Por favor, insira a data fim (formato DD/MM/AAAA):");
+                userStateManager.setTempValue(numUser, "dataFim", textInput);
+                messageService.sendMessage(numUser, "Data fim registrada: " + textInput);
+                proximoEstado = UserStateManagerService.GERANDO_RESUMO_PERSONALIZADO;
+                break;
+
+            case UserStateManagerService.GERANDO_RESUMO_PERSONALIZADO:
+                String dataInicio = (String) userStateManager.getTempValue(numUser, "dataInicio");
+                String dataFim = (String) userStateManager.getTempValue(numUser, "dataFim");
+                if (dataInicio == null || dataFim == null) {
+                    messageService.sendMessage(numUser, "Erro: datas não encontradas. Tente novamente.");
+                    proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
+                    break;
+                }
+                enviarRelatorio(numUser,0, dataInicio, dataFim, reportRequest);
+                messageService.sendMessage(numUser, TEXTO_MENU_PRINCIPAL);
+                proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
+                break;
+
             default:
                 proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
         }
@@ -302,7 +311,7 @@ public class ChatbotService {
                 proximoEstado = UserStateManagerService.MENU_PRINCIPAL;
             }
         }
-        if (resposta != null && !resposta.isBlank()) {
+        if (!resposta.isBlank()) {
             messageService.sendMessage(numUser, resposta);
         }
         userStateManager.setState(numUser, proximoEstado);

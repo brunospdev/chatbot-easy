@@ -3,6 +3,7 @@ import makeWASocket, {
   useMultiFileAuthState,
   fetchLatestBaileysVersion,
   DisconnectReason,
+    jidNormalizedUser,
   proto
 } from "@whiskeysockets/baileys";
 import pino from "pino";
@@ -46,27 +47,34 @@ export async function connectToWhatsApp() {
   sock.ev.on("creds.update", saveCreds);
 
   sock.ev.on("messages.upsert", async ({ messages }) => {
-    const msg = messages[0];
-    if (!msg.message || msg.key.fromMe) return;
+      const msg = messages[0];
+      if (!msg.message || msg.key.fromMe) return;
+      if (msg.key.remoteJid) {
+          msg.key.remoteJid = jidNormalizedUser(msg.key.remoteJid);
+      } else {
+          return;
+      }
 
-    if (msg.key.remoteJid?.endsWith("@g.us")) return;
-    if (msg.key.remoteJid?.endsWith("@newsletter")) return;
+      const rjid = msg.key.remoteJid;
 
-    let textoMensagem = "";
-    if (msg.message.conversation) {
-      textoMensagem = msg.message.conversation;
-    } else if (msg.message.extendedTextMessage?.text) {
-      textoMensagem = msg.message.extendedTextMessage.text;
-    } else if (msg.message.imageMessage) {
-      textoMensagem = "[Imagem recebida]"
-    } else if (msg.message.videoMessage) {
-      textoMensagem = "[Video recebido]"
-    } else if (msg.message.stickerMessage) {
-      textoMensagem = "[Sticker recebido]"
-    }
+      if (rjid.endsWith("@g.us")) return;
+      if (rjid.endsWith("@newsletter")) return;
 
-    const sender = msg.key.remoteJid
-    const senderNumber = sender?.replace(/@s\.whatsapp\.net$/, "") || "";
+      let textoMensagem = "";
+      if (msg.message.conversation) {
+          textoMensagem = msg.message.conversation;
+      } else if (msg.message.extendedTextMessage?.text) {
+          textoMensagem = msg.message.extendedTextMessage.text;
+      } else if (msg.message.imageMessage) {
+          textoMensagem = "[Imagem recebida]"
+      } else if (msg.message.videoMessage) {
+          textoMensagem = "[Video recebido]"
+      } else if (msg.message.stickerMessage) {
+          textoMensagem = "[Sticker recebido]"
+      }
+
+      const sender = msg.key.remoteJid
+      const senderNumber = rjid.replace(/@s\.whatsapp\.net$/, "") || "";
 
     const zona = "America/Sao_Paulo";
     const usuario = await Usuario.getUsuarioByNumber(senderNumber);
